@@ -1,15 +1,21 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
-import HelloWorld from "../components/HelloWorld.vue";
+import LoginView from "../View/LoginView.vue";
+
+const routes = [
+  {
+    path: '/',          
+    redirect: '/login', 
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: LoginView,
+  },
+];
 
 const router = createRouter({
-  history: createWebHistory(),
-  routes: [
-    {
-        path: "/",
-        name: "home",
-        component: HelloWorld,
-      },
-  ]
+  history: createWebHistory(import.meta.env.VITE_API_URL),
+  routes,
 });
 
 // console.log("history", process.env.BASE_URL)
