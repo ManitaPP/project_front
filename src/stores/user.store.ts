@@ -3,9 +3,10 @@ import { User } from '../stores/types/user';
 import { ref } from 'vue';
 import userService from '../services/user.service';
 
-export const useUserStore = defineStore("userStore", () => {
+export const useUserStore = defineStore("useUserStore", () => {
     const users = ref<User[]>([]);
     const currentUser= ref<User>();
+    const showDialog = ref(false);
 
     const getUsers = async () => {
         try {
@@ -47,5 +48,5 @@ export const useUserStore = defineStore("userStore", () => {
         }
       };
 
-      return { getUsers, createUser, deleteUser, updateUser, users, currentUser };
+      return { getUsers, createUser, deleteUser, updateUser, users, currentUser,showDialog };
 })

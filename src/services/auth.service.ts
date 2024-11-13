@@ -1,6 +1,5 @@
-import type { User } from "../stores/types/user";
 import http from "./axios";
-function login(user:User) {
-  return http.post("/auth/login", user);
+function login(email: string, password: string) {
+  return http.post("/auth/login", { email, password });
 }
 export default { login };
