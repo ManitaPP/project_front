@@ -1,35 +1,30 @@
-<!-- views/LoginView.vue -->
+<script lang="ts" setup></script>
+
 <template>
-  <div class="login">
-    <h1>Login Page</h1>
-    <form @submit.prevent="handleLogin">
-      <input type="text" v-model="username" placeholder="Username" />
-      <input type="password" v-model="password" placeholder="Password" />
-      <button type="submit">Login</button>
-    </form>
-  </div>
+  <v-container fill-height fluid>
+    <v-row>
+      <v-col></v-col>
+      <v-col>
+        <v-card style="text-align: center">
+          <v-card-title>เข้าสู่ระบบ</v-card-title>
+          <v-card-text>
+            <v-form>
+              <v-text-field label="Email" required variant="solo"></v-text-field>
+              <v-text-field
+                label="Password"
+                type="password"
+                variant="solo"
+                required
+              ></v-text-field>
+            </v-form>
+          </v-card-text>
+          <v-card-action>
+            <v-btn>เข้าสู่ระบบ</v-btn>
+          </v-card-action>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      username: "",
-      password: "",
-    };
-  },
-  methods: {
-    handleLogin() {
-      // เพิ่มโค้ดการตรวจสอบเข้าสู่ระบบที่นี่
-      // ตัวอย่าง: เปลี่ยนเส้นทางไปยังหน้า Home หลังจากล็อกอินสำเร็จ
-      this.$router.push("/home");
-    },
-  },
-};
-</script>
-
-<style scoped>
-.login {
-  text-align: center;
-}
-</style>
+<style></style>

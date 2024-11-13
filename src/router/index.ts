@@ -1,6 +1,5 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
+import { createRouter, createWebHistory} from "vue-router";
 import LoginView from "../View/LoginView.vue";
-
 const routes = [
   {
     path: '/',          
