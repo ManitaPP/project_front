@@ -50,6 +50,10 @@ export const useAuthStore = defineStore("authStore", () => {
     localStorage.removeItem('token');
     currentUser.value = null;
     router.push("/login");
+    Swal.fire({
+      icon: "success",
+      title: "ออกจากระบบสำเร็จ",
+    });
   }
 
   const registerUser = async (user: User) => {

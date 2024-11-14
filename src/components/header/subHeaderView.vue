@@ -24,7 +24,7 @@ onMounted(() => {
       >
         <v-list>
           <v-list-item
-            prepend-avatar="https://randomuser.me/api/portraits/women/85.jpg"
+            prepend-icon="mdi-card-account-details"
             :subtitle="authStore.currentUser?.email"
             :title="authStore.currentUser?.name"
           ></v-list-item>

@@ -47,7 +47,7 @@ const deleteUser = async (idUser: number) => {
     <v-row>
       <v-col col="12">
         <v-card>
-          <v-card-title style="text-align: center">ข้อมูลผู้ใช้</v-card-title>
+          <v-card-title style="text-align: center">ข้อมูลผู้ใช้ทั้งหมด</v-card-title>
           <v-card-text>
             <v-table color="#E9EFEC" style="width: 100%; border-collapse: collapse">
               <thead>

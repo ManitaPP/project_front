@@ -11,6 +11,10 @@ export const useUserStore = defineStore("useUserStore", () => {
     const email = ref('');
     const password = ref('');
     const thaiId = ref('');
+    const nameError = ref('');
+    const emailError = ref('');
+    const passwordError = ref('');
+    const thaiIdError = ref('');
 
     const getUsers = async () => {
         try {
@@ -48,6 +52,7 @@ export const useUserStore = defineStore("useUserStore", () => {
           const res = await userService.deleteUser(id);
           console.log("res", res.data);
           currentUser.value = res.data;
+          getUsers();
         } catch (e) {
           console.error("Failed to fetch users:", e);
         }
@@ -63,5 +68,5 @@ export const useUserStore = defineStore("useUserStore", () => {
         }
       };
 
-      return { getUsers, createUser, deleteUser, updateUser, users, currentUser,showDialog ,name, email, password, thaiId, getUserByRole  };
+      return { getUsers, createUser, deleteUser, updateUser, users, currentUser,showDialog ,name, email, password, thaiId, getUserByRole, thaiIdError,nameError,passwordError,emailError,  };
 })

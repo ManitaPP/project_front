@@ -30,12 +30,14 @@ function goToRegister() {
                 label="Email"
                 required
                 variant="solo"
+                prepend-icon="mdi-account"
                 v-model="email"
               ></v-text-field>
               <v-text-field
                 label="Password"
                 type="password"
                 variant="solo"
+                prepend-icon="mdi-lock"
                 required
                 v-model="password"
               ></v-text-field>
