@@ -63,8 +63,8 @@ const editUser = async () => {
 };
 </script>
 <template>
-  <v-container>
-    <v-card>
+  <v-container align="center" justify="center">
+    <v-card style="width: 50%">
       <v-card-title style="text-align: center">แก้ไขข้อมูลผู้ใช้</v-card-title>
       <v-card-text>
         <v-row>
@@ -72,6 +72,7 @@ const editUser = async () => {
             ><v-text-field
               label="รหัสบัตรประชาชน"
               variant="solo"
+              prepend-icon="mdi-card-account-details"
               :error-messages="userStore.thaiIdError"
               v-model="userStore.currentUser!.thaiId"
             ></v-text-field
@@ -82,6 +83,7 @@ const editUser = async () => {
             ><v-text-field
               label="ชื่อ-นามสกุล"
               variant="solo"
+              prepend-icon="mdi-account-circle"
               :error-messages="userStore.nameError"
               v-model="userStore.currentUser!.name"
             ></v-text-field
@@ -92,6 +94,7 @@ const editUser = async () => {
             ><v-text-field
               label="อีเมล"
               variant="solo"
+              prepend-icon="mdi-email"
               :error-messages="userStore.emailError"
               v-model="userStore.currentUser!.email"
             ></v-text-field

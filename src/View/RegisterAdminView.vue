@@ -89,6 +89,7 @@ const saveUser = () => {
       showConfirmButton: false,
       timer: 1500,
     });
+    clearData();
     return;
   }
   const user = {
@@ -118,9 +119,9 @@ const clearData = () => {
 };
 </script>
 <template>
-  <v-container>
-    <v-row>
-      <v-col>
+  <!-- <v-container fill-height>
+    <v-row align="center" justify="center">
+      <v-col cols="12" sm="8" md="6">
         <v-card style="text-align: center">
           <v-card-title>ลงทะเบียน</v-card-title>
           <v-card-text>
@@ -129,41 +130,100 @@ const clearData = () => {
                 label="รหัสบัตรประชาชน"
                 required
                 variant="solo"
-                v-model="userStore.thaiId"
+                prepend-icon="mdi-card-account-details"
                 :error-messages="userStore.thaiIdError"
+                v-model="userStore.thaiId"
+              ></v-text-field>
+              <v-text-field
+                label="ชื่อ-นามสกุล"
+                variant="solo"
+                prepend-icon="mdi-account-circle"
+                :error-messages="userStore.nameError"
+                v-model="userStore.name"
+                required
               ></v-text-field>
               <v-text-field
                 label="อีเมล"
                 required
                 variant="solo"
-                v-model="userStore.email"
+                prepend-icon="mdi-email"
                 :error-messages="userStore.emailError"
+                v-model="userStore.email"
               ></v-text-field>
               <v-text-field
                 label="รหัสผ่าน"
                 variant="solo"
                 required
-                :type="showPassword ? 'text' : 'password'"
+                prepend-icon="mdi-lock"
                 v-model="userStore.password"
                 :error-messages="userStore.passwordError"
-                ><template #append>
-                  <v-icon @click="togglePasswordVisibility">{{
-                    showPassword ? "mdi-eye" : "mdi-eye-off"
-                  }}</v-icon>
-                </template></v-text-field
+                :type="showPassword ? 'text' : 'password'"
+                :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                @click:append="togglePasswordVisibility"
               >
+              </v-text-field>
+            </v-form>
+            <v-card-actions>
+              <v-btn @click="returnToLogin()" color="primary">ย้อนกลับ</v-btn>
+              <v-spacer></v-spacer>
+              <v-btn @click="saveUser()" color="success">ยืนยัน</v-btn>
+            </v-card-actions>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container> -->
+  <v-container fill-height>
+    <v-row align="center" justify="center">
+      <v-col cols="12" sm="8" md="6">
+        <v-card style="text-align: center; margin-top: 30%">
+          <v-card-title>ลงทะเบียน</v-card-title>
+          <v-card-text>
+            <v-form>
+              <v-text-field
+                label="รหัสบัตรประชาชน"
+                required
+                variant="solo"
+                prepend-icon="mdi-card-account-details"
+                :error-messages="userStore.thaiIdError"
+                v-model="userStore.thaiId"
+              ></v-text-field>
               <v-text-field
                 label="ชื่อ-นามสกุล"
                 variant="solo"
-                v-model="userStore.name"
+                prepend-icon="mdi-account-circle"
                 :error-messages="userStore.nameError"
+                v-model="userStore.name"
                 required
               ></v-text-field>
+              <v-text-field
+                label="อีเมล"
+                required
+                variant="solo"
+                prepend-icon="mdi-email"
+                :error-messages="userStore.emailError"
+                v-model="userStore.email"
+              ></v-text-field>
+              <v-text-field
+                label="รหัสผ่าน"
+                variant="solo"
+                required
+                prepend-icon="mdi-lock"
+                v-model="userStore.password"
+                :error-messages="userStore.passwordError"
+                :type="showPassword ? 'text' : 'password'"
+              >
+                <template #append>
+                  <v-icon @click="togglePasswordVisibility">
+                    {{ showPassword ? "mdi-eye" : "mdi-eye-off" }}
+                  </v-icon>
+                </template>
+              </v-text-field>
             </v-form>
             <v-card-actions>
-              <v-btn @click="returnToLogin()">ย้อนกลับ</v-btn>
+              <v-btn @click="returnToLogin()" color="primary">ย้อนกลับ</v-btn>
               <v-spacer></v-spacer>
-              <v-btn @click="saveUser()">ยืนยัน</v-btn>
+              <v-btn @click="saveUser()" color="success">ยืนยัน</v-btn>
             </v-card-actions>
           </v-card-text>
         </v-card>
@@ -171,3 +231,12 @@ const clearData = () => {
     </v-row>
   </v-container>
 </template>
+
+<style>
+.v-text-field .v-input__append {
+  position: absolute;
+  right: 5%;
+  transform: translateY(70%);
+  margin-right: 10px;
+}
+</style>

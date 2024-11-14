@@ -47,11 +47,14 @@ const deleteUser = async (idUser: number) => {
     <v-row>
       <v-col col="12">
         <v-card>
-          <v-card-title style="text-align: center">ข้อมูลผู้ใช้ทั้งหมด</v-card-title>
+          <v-card-title style="text-align: center"
+            >ข้อมูลผู้ใช้ทั้งหมด
+            <v-icon style="margin-left: 1%; margin-bottom: 1%">mdi-account-group</v-icon>
+          </v-card-title>
           <v-card-text>
-            <v-table color="#E9EFEC" style="width: 100%; border-collapse: collapse">
+            <v-table color="#E9EFEC" style="width: 100%" class="styled-table">
               <thead>
-                <tr>
+                <tr style="background-color: #e1d7c6">
                   <th style="text-align: center">รหัสบัตรประชาชน</th>
                   <th style="text-align: center">ชื่อ-นามสกุล</th>
                   <th style="text-align: center">อีเมล</th>
@@ -94,5 +97,15 @@ const deleteUser = async (idUser: number) => {
   /* สีของเส้นแบ่ง */
   height: auto;
   /* ให้สูงตามความสูงของ col */
+}
+.styled-table th,
+.styled-table td {
+  text-align: center;
+  border: 1px solid black; /* Add borders to table cells */
+}
+
+.styled-table {
+  width: 100%;
+  border-collapse: collapse; /* Ensures the borders between cells are merged */
 }
 </style>
