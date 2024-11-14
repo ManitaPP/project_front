@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 import { useAuthStore } from "../stores/auth.store";
+import router from "../router";
 
 const password = ref("");
 const email = ref("");
@@ -12,19 +13,17 @@ function summit() {
   password.value = "";
   email.value = "";
 }
-function cancel() {
-  password.value = "";
-  email.value = "";
+function goToRegister() {
+  router.push("/register");
 }
 </script>
 
 <template>
-  <v-container>
-    <v-row>
-      <v-col></v-col>
-      <v-col>
-        <v-card style="text-align: center">
-          <v-card-title>เข้าสู่ระบบ</v-card-title>
+  <v-container fluid fill-height>
+    <v-row align="center" justify="center" style="height: 100vh">
+      <v-col cols="12" sm="6" md="4">
+        <v-card>
+          <v-card-title class="text-center">เข้าสู่ระบบ</v-card-title>
           <v-card-text>
             <v-form>
               <v-text-field
@@ -42,9 +41,9 @@ function cancel() {
               ></v-text-field>
             </v-form>
             <v-card-actions>
-              <v-btn @click="cancel()">ยกเลิก</v-btn>
+              <v-btn @click="summit()" color="success">ยืนยัน</v-btn>
               <v-spacer></v-spacer>
-              <v-btn @click="summit()">ยืนยัน</v-btn>
+              <v-btn @click="goToRegister()" color="primary">สมัครสมาชิก</v-btn>
             </v-card-actions>
           </v-card-text>
         </v-card>

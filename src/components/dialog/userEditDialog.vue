@@ -9,7 +9,7 @@ const cancel = () => {
 
 const editUser = async () => {
   if (userStore.currentUser) {
-    userStore.updateUser(userStore.currentUser?.userId, userStore.currentUser);
+    userStore.updateUser(userStore.currentUser?.userId!, userStore.currentUser);
     userStore.showDialog = false;
     Swal.fire({
       icon: "success",

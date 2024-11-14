@@ -7,7 +7,7 @@ console.log(isLoginPage);
 </script>
 
 <template>
-  <v-app>
+  <v-app style="background-color: #fff8e8">
     <v-main>
       <router-view />
     </v-main>

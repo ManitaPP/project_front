@@ -49,7 +49,7 @@ const deleteUser = (idUser: number) => {
         <v-card>
           <v-card-title style="text-align: center">ข้อมูลผู้ใช้</v-card-title>
           <v-card-text>
-            <v-table>
+            <v-table color="#E9EFEC" style="width: 100%; border-collapse: collapse">
               <thead>
                 <tr>
                   <th style="text-align: center">รหัสบัตรประชาชน</th>
@@ -58,14 +58,22 @@ const deleteUser = (idUser: number) => {
                   <th style="text-align: center">เพิ่มเติม</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr v-for="(item, index) of userStore.users" :key="index">
+              <tbody
+                v-for="(item, index) of userStore.users"
+                :key="index"
+                style="overflow-y: scroll"
+              >
+                <tr v-if="item.role === 'user'">
                   <td style="text-align: center">{{ item.thaiId }}</td>
                   <td style="text-align: center">{{ item.name }}</td>
                   <td style="text-align: center">{{ item.email }}</td>
                   <td style="text-align: center">
-                    <v-btn style="margin: 5%" @click="editUser(item)">แก้ไข</v-btn>
-                    <v-btn @click="deleteUser(item.userId)">ลบ</v-btn>
+                    <v-btn style="margin: 5%" @click="editUser(item)" color="#F0EAAC"
+                      ><v-icon>mdi-pencil</v-icon></v-btn
+                    >
+                    <v-btn @click="deleteUser(item.userId!)" color="#F0A4AC"
+                      ><v-icon>mdi-trash-can</v-icon></v-btn
+                    >
                     <v-dialog v-model="userStore.showDialog">
                       <UserEditDialog />
                     </v-dialog>

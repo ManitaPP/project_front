@@ -2,6 +2,8 @@ import { createRouter, createWebHistory} from "vue-router";
 import LoginView from "../View/LoginView.vue";
 import ProfileView from "../View/ProfileView.vue";
 import UserManagementView from "../View/userManagementView.vue";
+import RegisterView from "../View/RegisterView.vue";
+import RegisterAdminView from "../View/RegisterAdminView.vue";
 const routes = [
   {
     path: '/',          
@@ -21,6 +23,16 @@ const routes = [
     path: '/userManagement',
     name: 'userManagement',
     component: UserManagementView,
+  },
+  {
+    path: '/register',
+    name: 'register',
+    component: RegisterView,
+  },
+  {
+    path: '/registerAdmin',
+    name: 'registerAdmin',
+    component: RegisterAdminView,
   },
 ];
 

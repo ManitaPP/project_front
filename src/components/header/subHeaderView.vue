@@ -15,7 +15,13 @@ onMounted(() => {
 <template>
   <v-card class="fill-height">
     <v-container fluid class="fill-height pa-0 ma-0">
-      <v-navigation-drawer expand-on-hover rail permanent class="fill-height">
+      <v-navigation-drawer
+        expand-on-hover
+        rail
+        permanent
+        class="fill-height"
+        color="#E1D7C6"
+      >
         <v-list>
           <v-list-item
             prepend-avatar="https://randomuser.me/api/portraits/women/85.jpg"
@@ -28,22 +34,23 @@ onMounted(() => {
 
         <v-list dense nav>
           <v-list-item
-            prepend-icon="mdi-folder"
+            prepend-icon="mdi-home"
             title="หน้าหลัก"
             value="หน้าหลัก"
             link
+            v-if="authStore.currentUser?.role === 'user'"
             to="/profile"
           ></v-list-item>
           <v-list-item
             v-if="authStore.currentUser?.role === 'admin'"
-            prepend-icon="mdi-folder"
+            prepend-icon="mdi-home"
             title="หน้าหลัก"
             value="หน้าหลัก"
             link
             to="/userManagement"
           ></v-list-item>
           <v-list-item
-            prepend-icon="mdi-account-multiple"
+            prepend-icon="mdi-exit-to-app"
             title="ออกจากระบบ"
             value="ออกจากระบบ"
             link

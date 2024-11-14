@@ -18,6 +18,9 @@ function getUser() {
   function getUserByEmail(email: string) {
     return http.get(`/users/${email}`);
   }
+  function getUserByRole(role: string) {
+    return http.get(`/users/${role}`);
+  }
 
   export default {
     getUser,
@@ -25,6 +28,7 @@ function getUser() {
     updateUser,
     createUser,
     getUserByEmail,
+    getUserByRole,
   };
   
 

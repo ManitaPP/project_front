@@ -7,6 +7,10 @@ export const useUserStore = defineStore("useUserStore", () => {
     const users = ref<User[]>([]);
     const currentUser= ref<User>();
     const showDialog = ref(false);
+    const name = ref('');
+    const email = ref('');
+    const password = ref('');
+    const thaiId = ref('');
 
     const getUsers = async () => {
         try {
@@ -48,5 +52,15 @@ export const useUserStore = defineStore("useUserStore", () => {
         }
       };
 
-      return { getUsers, createUser, deleteUser, updateUser, users, currentUser,showDialog };
+      const getUserByRole = async (role:string) => {
+        try {
+          const res = await userService.getUserByRole(role);
+          console.log("res", res.data);
+          users.value = res.data;
+        } catch (e) {
+          console.error("Failed to fetch users:", e);
+        }
+      };
+
+      return { getUsers, createUser, deleteUser, updateUser, users, currentUser,showDialog ,name, email, password, thaiId, getUserByRole  };
 })
