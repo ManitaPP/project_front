@@ -18,13 +18,6 @@ const saveUser = () => {
   };
   console.log(user);
   authStore.registerUser(user);
-  Swal.fire({
-    icon: "success",
-    title: "บันทึกข้อมูลผู้ใช้สำเร็จ",
-    text: "ผู้ใช้สามารถเข้าสู่ระบบได้",
-    showConfirmButton: false,
-    timer: 1500,
-  });
   userStore.thaiId = "";
   userStore.email = "";
   userStore.password = "";

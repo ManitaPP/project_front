@@ -37,6 +37,7 @@ export const useUserStore = defineStore("useUserStore", () => {
           const res = await userService.updateUser(id,user);
           console.log("res", res.data);
           currentUser.value = res.data;
+          getUsers();
         } catch (e) {
           console.error("Failed to fetch users:", e);
         }

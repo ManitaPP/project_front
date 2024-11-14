@@ -17,7 +17,7 @@ const editUser = (user: User) => {
   userStore.showDialog = true;
 };
 
-const deleteUser = (idUser: number) => {
+const deleteUser = async (idUser: number) => {
   Swal.fire({
     title: "ต้องการที่จะลบข้อมูลหรือไม่?",
     icon: "warning",
@@ -35,8 +35,8 @@ const deleteUser = (idUser: number) => {
         icon: "success",
       });
     }
-    await userStore.getUsers();
   });
+  await userStore.getUsers();
 };
 </script>
 

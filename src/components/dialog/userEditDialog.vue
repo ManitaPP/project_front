@@ -17,7 +17,6 @@ const editUser = async () => {
       showConfirmButton: false,
       timer: 1500,
     });
-    await userStore.getUsers();
   }
 };
 </script>
