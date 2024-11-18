@@ -121,16 +121,17 @@ const saveUser = () => {
 };
 </script>
 <template>
-  <v-container fill-height>
+  <v-container fill-height class="register-page">
     <v-row align="center" justify="center">
       <v-col cols="12" sm="8" md="6">
-        <v-card style="text-align: center; margin-top: 30%">
+        <v-card style="text-align: center; margin-top: 20%">
           <v-card-title>ลงทะเบียน</v-card-title>
           <v-card-text>
             <v-form>
               <v-text-field
                 label="รหัสบัตรประชาชน"
                 required
+                rounded
                 variant="solo"
                 prepend-icon="mdi-card-account-details"
                 :error-messages="userStore.thaiIdError"
@@ -139,6 +140,7 @@ const saveUser = () => {
               <v-text-field
                 label="ชื่อ-นามสกุล"
                 variant="solo"
+                rounded
                 prepend-icon="mdi-account-circle"
                 :error-messages="userStore.nameError"
                 v-model="userStore.name"
@@ -147,6 +149,7 @@ const saveUser = () => {
               <v-text-field
                 label="อีเมล"
                 required
+                rounded
                 variant="solo"
                 prepend-icon="mdi-email"
                 :error-messages="userStore.emailError"
@@ -156,6 +159,7 @@ const saveUser = () => {
                 label="รหัสผ่าน"
                 variant="solo"
                 required
+                rounded
                 prepend-icon="mdi-lock"
                 v-model="userStore.password"
                 :error-messages="userStore.passwordError"
@@ -181,9 +185,8 @@ const saveUser = () => {
 </template>
 
 <style>
-.v-text-field .v-input__append {
+.register-page .v-text-field .v-input__append {
   position: absolute;
-  right: 5%;
   transform: translateY(70%);
   margin-right: 10px;
 }

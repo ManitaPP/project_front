@@ -4,6 +4,9 @@ import ProfileView from "../View/ProfileView.vue";
 import UserManagementView from "../View/userManagementView.vue";
 import RegisterView from "../View/RegisterView.vue";
 import RegisterAdminView from "../View/RegisterAdminView.vue";
+import { useAuthStore } from "../stores/auth.store";
+import ForbiddenView from "../View/ForbiddenView.vue";
+
 const routes = [
   {
     path: '/',          
@@ -18,11 +21,13 @@ const routes = [
     path: '/profile',
     name: 'profile',
     component: ProfileView,
+    meta: { requiredRole: 'user' },
   },
   {
     path: '/userManagement',
     name: 'userManagement',
     component: UserManagementView,
+    meta: { requiredRole: 'admin' },
   },
   {
     path: '/register',
@@ -34,6 +39,11 @@ const routes = [
     name: 'registerAdmin',
     component: RegisterAdminView,
   },
+  {
+    path: '/forbidden',
+    name: 'forbidden',
+    component: ForbiddenView,
+  },
 ];
 
 const router = createRouter({
@@ -41,7 +51,21 @@ const router = createRouter({
   routes,
 });
 
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore();
+  const userRole = authStore.currentUser?.role;
+  console.log("role",userRole);
 
-// console.log("history", process.env.BASE_URL)
+  if (!userRole && to.meta.requiredRole) {
+    next({ name: 'Login' });
+  }
+  else if (to.meta.requiredRole && to.meta.requiredRole !== userRole) {
+    next({ name: 'forbidden' });
+  }
+  else {
+    next();
+  }
+});
+
 
 export default router;

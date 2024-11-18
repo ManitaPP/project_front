@@ -176,7 +176,7 @@ const clearData = () => {
   <v-container fill-height>
     <v-row align="center" justify="center">
       <v-col cols="12" sm="8" md="6">
-        <v-card style="text-align: center; margin-top: 30%">
+        <v-card style="text-align: center; margin-top: 20%">
           <v-card-title>ลงทะเบียน</v-card-title>
           <v-card-text>
             <v-form>
@@ -184,6 +184,7 @@ const clearData = () => {
                 label="รหัสบัตรประชาชน"
                 required
                 variant="solo"
+                rounded
                 prepend-icon="mdi-card-account-details"
                 :error-messages="userStore.thaiIdError"
                 v-model="userStore.thaiId"
@@ -191,6 +192,7 @@ const clearData = () => {
               <v-text-field
                 label="ชื่อ-นามสกุล"
                 variant="solo"
+                rounded
                 prepend-icon="mdi-account-circle"
                 :error-messages="userStore.nameError"
                 v-model="userStore.name"
@@ -200,6 +202,7 @@ const clearData = () => {
                 label="อีเมล"
                 required
                 variant="solo"
+                rounded
                 prepend-icon="mdi-email"
                 :error-messages="userStore.emailError"
                 v-model="userStore.email"
@@ -207,6 +210,7 @@ const clearData = () => {
               <v-text-field
                 label="รหัสผ่าน"
                 variant="solo"
+                rounded
                 required
                 prepend-icon="mdi-lock"
                 v-model="userStore.password"

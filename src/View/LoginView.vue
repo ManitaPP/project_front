@@ -22,12 +22,18 @@ function goToRegister() {
 </script>
 
 <template>
-  <v-container fluid fill-height>
-    <v-row align="center" justify="center">
-      <v-col cols="12" sm="6" md="4">
-        <v-card style="margin-top: 30%">
+  <v-container class="login-page">
+    <v-card style="height: 90vh">
+      <v-row>
+        <v-col style="margin-top: 7%">
+          <!-- <v-card> -->
           <v-card-text align="center" justify="center">
-            <v-img src="/public/login.png" height="150" width="200"></v-img>
+            <v-img
+              src="/public/login.png"
+              height="150"
+              width="200"
+              class="animated-image"
+            ></v-img>
           </v-card-text>
           <v-card-text>
             <v-form>
@@ -35,6 +41,7 @@ function goToRegister() {
                 label="Email"
                 required
                 variant="solo"
+                rounded
                 prepend-icon="mdi-account"
                 v-model="email"
               ></v-text-field>
@@ -50,6 +57,7 @@ function goToRegister() {
                 label="รหัสผ่าน"
                 variant="solo"
                 required
+                rounded
                 prepend-icon="mdi-lock"
                 v-model="password"
                 :type="showPassword ? 'text' : 'password'"
@@ -61,32 +69,75 @@ function goToRegister() {
                 </template>
               </v-text-field>
             </v-form>
-            <v-card-actions>
-              <v-row>
-                <v-col cols="12" sm="6">
-                  <v-btn @click="summit()" color="success" variant="tonal" block
-                    >ยืนยัน</v-btn
-                  >
-                </v-col>
-                <v-col cols="12" sm="6">
-                  <v-btn @click="goToRegister()" color="primary" variant="tonal" block
-                    >สมัครสมาชิก</v-btn
-                  >
-                </v-col>
-              </v-row>
-            </v-card-actions>
+            <v-row style="justify-content: center">
+              <v-col cols="10">
+                <v-btn
+                  @click="summit()"
+                  size="large"
+                  color="success"
+                  variant="tonal"
+                  block
+                  rounded
+                  >เข้าสู่ระบบ</v-btn
+                >
+              </v-col>
+            </v-row>
+            <v-row style="justify-content: center">
+              <v-col cols="10">
+                <!-- <v-btn
+                  @click="goToRegister()"
+                  size="large"
+                  color="primary"
+                  variant="tonal"
+                  rounded
+                  block
+                  >สมัครสมาชิก</v-btn
+                > -->
+                <p
+                  style="text-align: center; color: cornflowerblue"
+                  @click="goToRegister()"
+                >
+                  สมัครสมาชิก
+                </p>
+              </v-col>
+            </v-row>
           </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
+          <!-- </v-card> -->
+        </v-col>
+        <v-col class="fullscreen"> </v-col>
+      </v-row>
+    </v-card>
   </v-container>
 </template>
 
 <style>
-.v-text-field .v-input__append {
+.login-page .v-text-field .v-input__append {
   position: absolute;
-  right: 5%;
+  left: 42%;
   transform: translateY(70%);
   margin-right: 10px;
+}
+.animated-image {
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(-10px);
+  }
+  50% {
+    transform: translateY(-30px);
+  }
+}
+.fullscreen {
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  background-color: #ede8dc;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
 }
 </style>
