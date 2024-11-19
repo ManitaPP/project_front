@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Swal from "sweetalert2";
 import { useUserStore } from "../../stores/user.store";
-import { watch } from "vue";
+import { ref, watch } from "vue";
 
 const userStore = useUserStore();
 const cancel = async () => {
@@ -18,11 +18,10 @@ const validateEmail = (email) => {
 watch(
   () => userStore.currentUser?.thaiId,
   (newVal) => {
-    console.log(newVal);
     if (newVal && newVal.length !== 13) {
       userStore.thaiIdError = "รหัสบัตรประชาชนต้องมี 13 หลัก";
     }
-    if (newVal && (newVal.length === 0 || newVal.length === 13)) {
+    if (newVal && newVal.length === 13) {
       userStore.thaiIdError = "";
     }
   }
@@ -33,7 +32,7 @@ watch(
     if (newVal && newVal.length <= 3) {
       userStore.nameError = "ชื่อ-นามสกุลต้องมีความยาวมากกว่า 3 ตัวอักษร";
     }
-    if (newVal && (newVal.length === 0 || newVal.length > 3)) {
+    if (newVal && newVal.length > 3) {
       userStore.nameError = "";
     }
   }
@@ -41,16 +40,37 @@ watch(
 watch(
   () => userStore.currentUser?.email,
   (newVal) => {
-    if (newVal && (validateEmail(newVal) || newVal.length === 0)) {
+    if (newVal && validateEmail(newVal)) {
       userStore.emailError = "";
-    } else {
+    }
+    if (newVal && !validateEmail(newVal)) {
       userStore.emailError = "กรุณากรอกอีเมลให้ถูกต้อง";
     }
   }
 );
 
+const clearMessage = () => {
+  userStore.nameError = "";
+  userStore.emailError = "";
+  userStore.thaiIdError = "";
+};
 const editUser = async () => {
   if (userStore.currentUser) {
+    // if (
+    //   userStore.currentUser.thaiId.length !== 13 ||
+    //   userStore.currentUser.name.length <= 3 ||
+    //   !validateEmail(userStore.currentUser.email)
+    // ) {
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "ไม่สามารถแก้ไขได้",
+    //     showConfirmButton: false,
+    //     timer: 1500,
+    //   });
+    //   userStore.getUsers();
+    //   clearMessage();
+    //   userStore.showDialog = false;
+    // }
     userStore.updateUser(userStore.currentUser?.userId!, userStore.currentUser);
     userStore.showDialog = false;
     Swal.fire({
@@ -86,6 +106,17 @@ const editUser = async () => {
               prepend-icon="mdi-account-circle"
               :error-messages="userStore.nameError"
               v-model="userStore.currentUser!.name"
+            ></v-text-field
+          ></v-col>
+        </v-row>
+        <v-row>
+          <v-col col="6"
+            ><v-text-field
+              label="เบอร์โรศัพท์"
+              variant="solo"
+              prepend-icon="mdi-phone"
+              :error-messages="userStore.telError"
+              v-model="userStore.currentUser!.tel"
             ></v-text-field
           ></v-col>
         </v-row>

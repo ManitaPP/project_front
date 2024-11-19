@@ -11,6 +11,8 @@ export const useUserStore = defineStore("useUserStore", () => {
     const email = ref('');
     const password = ref('');
     const thaiId = ref('');
+    const tel = ref('');
+    const telError = ref('');
     const nameError = ref('');
     const emailError = ref('');
     const passwordError = ref('');
@@ -19,7 +21,6 @@ export const useUserStore = defineStore("useUserStore", () => {
     const getUsers = async () => {
         try {
           const res = await userService.getUser();
-          console.log("res", res.data);
           users.value = res.data;
         } catch (e) {
           console.error("Failed to fetch users:", e);
@@ -29,7 +30,6 @@ export const useUserStore = defineStore("useUserStore", () => {
       const createUser = async (user:User) => {
         try {
           const res = await userService.createUser(user);
-          console.log("res", res.data);
           currentUser.value = res.data;
         } catch (e) {
           console.error("Failed to fetch users:", e);
@@ -39,7 +39,6 @@ export const useUserStore = defineStore("useUserStore", () => {
       const updateUser = async (id: number,user:User) => {
         try {
           const res = await userService.updateUser(id,user);
-          console.log("res", res.data);
           currentUser.value = res.data;
           getUsers();
         } catch (e) {
@@ -50,7 +49,6 @@ export const useUserStore = defineStore("useUserStore", () => {
       const deleteUser = async (id: number) => {
         try {
           const res = await userService.deleteUser(id);
-          console.log("res", res.data);
           currentUser.value = res.data;
           getUsers();
         } catch (e) {
@@ -61,12 +59,21 @@ export const useUserStore = defineStore("useUserStore", () => {
       const getUserByRole = async (role:string) => {
         try {
           const res = await userService.getUserByRole(role);
-          console.log("res", res.data);
           users.value = res.data;
         } catch (e) {
           console.error("Failed to fetch users:", e);
         }
       };
 
-      return { getUsers, createUser, deleteUser, updateUser, users, currentUser,showDialog ,name, email, password, thaiId, getUserByRole, thaiIdError,nameError,passwordError,emailError,  };
+      const getUserByLeader = async (leaderId:number) => {
+        try {
+          const res = await userService.getUserByLeader(leaderId);
+          console.log("leaderId", res.data);
+          users.value = res.data;
+        } catch (e) {
+          console.error("Failed to fetch users:", e);
+        }
+      };
+
+      return { getUsers, createUser, deleteUser, updateUser, users, currentUser,showDialog ,name, email, password, thaiId, getUserByRole, thaiIdError,nameError,passwordError,emailError, tel,telError, getUserByLeader };
 })

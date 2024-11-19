@@ -4,5 +4,8 @@ export interface User {
     name: string;
     email: string;
     password: string;
+    tel: string;
     role?: string;
+    position?: string;
+    leaderId?: number;
 }

@@ -110,6 +110,7 @@ const saveUser = () => {
     email: userStore.email,
     password: userStore.password,
     name: userStore.name,
+    tel: userStore.tel,
   };
   console.log(user);
   authStore.registerUser(user);
@@ -144,6 +145,15 @@ const saveUser = () => {
                 prepend-icon="mdi-account-circle"
                 :error-messages="userStore.nameError"
                 v-model="userStore.name"
+                required
+              ></v-text-field>
+              <v-text-field
+                label="เบอร์โทรศัพท์"
+                variant="solo"
+                rounded
+                prepend-icon="mdi-phone"
+                :error-messages="userStore.telError"
+                v-model="userStore.tel"
                 required
               ></v-text-field>
               <v-text-field

@@ -22,6 +22,10 @@ function getUser() {
     return http.get(`/users/${role}`);
   }
 
+  function getUserByLeader(leaderId: number) {
+    return http.get(`/users/leader/${leaderId}`);
+  }
+
   export default {
     getUser,
     deleteUser,
@@ -29,6 +33,7 @@ function getUser() {
     createUser,
     getUserByEmail,
     getUserByRole,
+    getUserByLeader
   };
   
 

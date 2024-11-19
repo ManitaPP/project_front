@@ -6,6 +6,7 @@ import RegisterView from "../View/RegisterView.vue";
 import RegisterAdminView from "../View/RegisterAdminView.vue";
 import { useAuthStore } from "../stores/auth.store";
 import ForbiddenView from "../View/ForbiddenView.vue";
+import MainView from "../View/MainView.vue";
 
 const routes = [
   {
@@ -43,6 +44,11 @@ const routes = [
     path: '/forbidden',
     name: 'forbidden',
     component: ForbiddenView,
+  },
+  {
+    path: '/main',
+    name: 'main',
+    component: MainView,
   },
 ];
 

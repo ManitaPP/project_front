@@ -23,17 +23,22 @@ onMounted(() => {
           <v-card-text>
             <v-row>
               <v-col>
-                <h3>รหัสบัตรประชาชน: {{ authStore.currentUser?.thaiId }}</h3>
+                <p>รหัสบัตรประชาชน: {{ authStore.currentUser?.thaiId }}</p>
               </v-col>
             </v-row>
             <v-row>
               <v-col col="2">
-                <h3>ชื่อ-นามสกุล: {{ authStore.currentUser?.name }}</h3>
+                <p>ชื่อ-นามสกุล: {{ authStore.currentUser?.name }}</p>
               </v-col>
             </v-row>
             <v-row>
               <v-col>
-                <h3>อีเมล: {{ authStore.currentUser?.email }}</h3>
+                <p>อีเมล: {{ authStore.currentUser?.email }}</p>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col>
+                <p>เบอร์: {{ authStore.currentUser?.tel }}</p>
               </v-col>
             </v-row>
           </v-card-text>
