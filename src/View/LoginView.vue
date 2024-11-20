@@ -104,7 +104,14 @@ function goToRegister() {
           </v-card-text>
           <!-- </v-card> -->
         </v-col>
-        <v-col class="fullscreen"> </v-col>
+        <v-col class="fullscreen">
+          <v-img
+            src="/public/มิ้นมงคล.jpg"
+            height="500"
+            width="500"
+            class="animated-image"
+          ></v-img>
+        </v-col>
       </v-row>
     </v-card>
   </v-container>

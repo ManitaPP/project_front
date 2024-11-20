@@ -58,6 +58,7 @@ const deleteUser = async (idUser: number) => {
                   <th style="text-align: center">รหัสบัตรประชาชน</th>
                   <th style="text-align: center">ชื่อ-นามสกุล</th>
                   <th style="text-align: center">อีเมล</th>
+                  <th style="text-align: center">เบอร์โทรศัพท์</th>
                   <th style="text-align: center">เพิ่มเติม</th>
                 </tr>
               </thead>
@@ -70,6 +71,7 @@ const deleteUser = async (idUser: number) => {
                   <td style="text-align: center">{{ item.thaiId }}</td>
                   <td style="text-align: center">{{ item.name }}</td>
                   <td style="text-align: center">{{ item.email }}</td>
+                  <td style="text-align: center">{{ item.tel }}</td>
                   <td style="text-align: center">
                     <v-btn style="margin: 5%" @click="editUser(item)" color="#F0EAAC"
                       ><v-icon>mdi-pencil</v-icon></v-btn

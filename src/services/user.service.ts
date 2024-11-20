@@ -4,6 +4,10 @@ import http from "./axios";
 function getUser() {
     return http.get("/users");
   }
+
+  function getOneUser(id: number) {
+    return http.get(`/users/${id}`);
+  }
   function deleteUser(id: number) {
     return http.delete(`/users/${id}`);
   }
@@ -26,6 +30,11 @@ function getUser() {
     return http.get(`/users/leader/${leaderId}`);
   }
 
+  function getPositionByLeader(leaderId: number) {
+    return http.get(`/users/position/${leaderId}`);
+  }
+
+
   export default {
     getUser,
     deleteUser,
@@ -33,7 +42,9 @@ function getUser() {
     createUser,
     getUserByEmail,
     getUserByRole,
-    getUserByLeader
+    getUserByLeader,
+    getPositionByLeader,
+    getOneUser
   };
   
 

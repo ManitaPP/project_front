@@ -22,7 +22,7 @@ const routes = [
     path: '/profile',
     name: 'profile',
     component: ProfileView,
-    meta: { requiredRole: 'user' },
+    meta: { requiredRoles: ['user', 'admin'] },
   },
   {
     path: '/userManagement',

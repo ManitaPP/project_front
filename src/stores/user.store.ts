@@ -2,11 +2,13 @@ import { defineStore } from 'pinia'
 import { User } from '../stores/types/user';
 import { ref } from 'vue';
 import userService from '../services/user.service';
+import { useAuthStore } from './auth.store';
 
 export const useUserStore = defineStore("useUserStore", () => {
     const users = ref<User[]>([]);
     const currentUser= ref<User>();
     const showDialog = ref(false);
+    const authStore = useAuthStore();
     const name = ref('');
     const email = ref('');
     const password = ref('');
@@ -40,7 +42,7 @@ export const useUserStore = defineStore("useUserStore", () => {
         try {
           const res = await userService.updateUser(id,user);
           currentUser.value = res.data;
-          getUsers();
+          getOneById(id);
         } catch (e) {
           console.error("Failed to fetch users:", e);
         }
@@ -68,12 +70,34 @@ export const useUserStore = defineStore("useUserStore", () => {
       const getUserByLeader = async (leaderId:number) => {
         try {
           const res = await userService.getUserByLeader(leaderId);
-          console.log("leaderId", res.data);
           users.value = res.data;
         } catch (e) {
           console.error("Failed to fetch users:", e);
         }
       };
 
-      return { getUsers, createUser, deleteUser, updateUser, users, currentUser,showDialog ,name, email, password, thaiId, getUserByRole, thaiIdError,nameError,passwordError,emailError, tel,telError, getUserByLeader };
+      const getPositionByLeader = async (leaderId:number) => {
+        try {
+          const res = await userService.getPositionByLeader(leaderId);
+          users.value = res.data;
+        } catch (e) {
+          console.error("Failed to fetch users:", e);
+        }
+      };
+
+      const getOneById = async (id:number) => {
+        try {
+          const res = await userService.getOneUser(id);
+          currentUser.value = res.data;
+          if(currentUser.value) {
+            authStore.currentUser = currentUser.value;
+          }
+          console.log("1",currentUser.value);
+          console.log("2",authStore.currentUser);
+        } catch (e) {
+          console.error("Failed to fetch users:", e);
+        }
+      };
+
+      return { getUsers, createUser, deleteUser, updateUser, users, currentUser,showDialog ,name, email, password, thaiId, getUserByRole, thaiIdError,nameError,passwordError,emailError, tel,telError, getUserByLeader,getPositionByLeader, getOneById };
 })

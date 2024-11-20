@@ -42,20 +42,19 @@ onMounted(() => {
             to="/main"
           ></v-list-item>
           <v-list-item
-            prepend-icon="mdi-account-tie"
-            title="ข้อมูลผู้ใช้"
-            value="ข้อมูลผู้ใช้"
-            link
-            v-if="authStore.currentUser?.role === 'user'"
-            to="/profile"
-          ></v-list-item>
-          <v-list-item
             v-if="authStore.currentUser?.role === 'admin'"
             prepend-icon="mdi-home"
             title="หน้าหลัก"
             value="หน้าหลัก"
             link
             to="/userManagement"
+          ></v-list-item>
+          <v-list-item
+            prepend-icon="mdi-account-tie"
+            title="ข้อมูลผู้ใช้"
+            value="ข้อมูลผู้ใช้"
+            link
+            to="/profile"
           ></v-list-item>
           <v-list-item
             prepend-icon="mdi-exit-to-app"

@@ -4,69 +4,103 @@ import HeaderView from "../components/header/headerView.vue";
 import SubHeaderView from "../components/header/subHeaderView.vue";
 import { useUserStore } from "../stores/user.store";
 import { useAuthStore } from "../stores/auth.store";
-import OrganizationChart from "vue-organization-chart";
+import OrganizationChart from "primevue/organizationchart";
 
 const userStore = useUserStore();
 const authStore = useAuthStore();
-interface TreeNode {
-  name: string;
-  position?: string;
-  children?: TreeNode[];
+
+interface Node {
+  key: string;
+  type: string;
+  label: string;
+  data: string;
+  children: Node[];
 }
 
-const treeData = ref<TreeNode | null>(null);
+const data = ref<Node>({
+  key: String(authStore.currentUser?.userId) || "",
+  type: "person",
+  label: authStore.currentUser?.name || "",
+  data: authStore.currentUser?.position || "",
+  children: [],
+});
+
+function constructNode(user) {
+  const node = {
+    key: `0_${user.userId}`,
+    type: "person",
+    label: user.name,
+    data: user.position,
+    children: [],
+  };
+  if (user.subordinates && user.subordinates.length > 0) {
+    node.children = user.subordinates.map((subordinate) => constructNode(subordinate));
+  }
+  return node;
+}
+
 onMounted(async () => {
   if (authStore.currentUser) {
-    await userStore.getUserByLeader(authStore.currentUser.userId!);
-    treeData.value = {
-      name: authStore.currentUser.name,
-      position: authStore.currentUser.position,
-      children: userStore.users.map((user) => ({
-        name: user.name,
-        position: user.position,
-      })),
-    };
+    await userStore.getPositionByLeader(authStore.currentUser.userId!);
+    data.value.children = userStore.users.map((user) => constructNode(user));
   }
+  console.log("user", userStore.users);
 });
+const getNodeStyle = (node) => {
+  switch (node) {
+    case "กำนัน":
+      return {
+        backgroundColor: "#E1D7C6",
+        color: "#000",
+        padding: "10px",
+        borderRadius: "8px",
+        border: "2px solid #000",
+      };
+    case "ผู้ใหญ่บ้าน":
+      return {
+        backgroundColor: "#D0E8C5",
+        color: "#000",
+        padding: "10px",
+        borderRadius: "8px",
+        border: "2px solid #000",
+      };
+    case "ผู้ช่วยผู้ใหญ่บ้าน":
+      return {
+        backgroundColor: "#ADD8E6",
+        color: "#000",
+        padding: "10px",
+        borderRadius: "8px",
+        border: "2px solid #000",
+      };
+    default:
+      return {
+        backgroundColor: "#FFF4B7",
+        color: "#000",
+        padding: "10px",
+        borderRadius: "8px",
+        border: "2px solid #000",
+      };
+  }
+};
 </script>
+
 <template>
   <HeaderView />
   <v-container>
     <SubHeaderView style="position: absolute; top: 0; left: 0; z-index: 1" />
     <v-card align="center" justify="center">
       <v-card-title style="text-align: center">แผนผังองค์กร</v-card-title>
-      <v-row>
-        <v-col>
-          <!-- <v-card style="text-align: center; width: 20%">
-            <v-card-title>{{ authStore.currentUser?.name }}</v-card-title>
-            <v-card-title>{{ authStore.currentUser?.position }}</v-card-title>
-          </v-card> -->
-          <!-- <organization-chart></organization-chart> -->
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col v-for="(item, index) of userStore.users" :key="index">
-          <!-- <v-card style="text-align: center; width: 20%">
-            <v-card-title>{{ item.name }}</v-card-title>
-            <v-card-title>{{ item.position }}</v-card-title>
-          </v-card> -->
-        </v-col>
-      </v-row>
+      <OrganizationChart :value="data" collapsible>
+        <template #person="slotProps">
+          <div
+            class="flex flex-col items-center"
+            :style="getNodeStyle(slotProps.node.data)"
+          >
+            <div class="mt-4 font-medium text-lg">{{ slotProps.node.label }}</div>
+            <div class="mt-4 font-medium text-lg">{{ slotProps.node.data }}</div>
+          </div>
+        </template>
+      </OrganizationChart>
     </v-card>
   </v-container>
 </template>
-
-<style scoped>
-.organization-chart-node {
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  padding: 10px;
-  text-align: center;
-  border-radius: 5px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.organization-chart-connector {
-  border-color: #ddd;
-}
-</style>

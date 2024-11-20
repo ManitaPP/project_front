@@ -10,6 +10,7 @@ const cancel = async () => {
   userStore.nameError = "";
   userStore.emailError = "";
   userStore.thaiIdError = "";
+  userStore.telError = "";
 };
 const validateEmail = (email) => {
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -34,6 +35,17 @@ watch(
     }
     if (newVal && newVal.length > 3) {
       userStore.nameError = "";
+    }
+  }
+);
+watch(
+  () => userStore.currentUser?.tel,
+  (newVal) => {
+    if (newVal && !/^0\d{9}$/.test(newVal)) {
+      userStore.telError = "เบอร์โทรศัพท์ต้องมี 10 หลัก";
+    }
+    if (newVal && newVal.length === 10) {
+      userStore.telError = "";
     }
   }
 );
