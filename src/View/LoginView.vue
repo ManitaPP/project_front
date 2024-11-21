@@ -25,13 +25,13 @@ function goToRegister() {
   <v-container class="login-page">
     <v-card style="height: 90vh">
       <v-row>
-        <v-col style="margin-top: 7%">
+        <v-col style="margin-top: 5%">
           <!-- <v-card> -->
           <v-card-text align="center" justify="center">
             <v-img
               src="/public/login.png"
               height="150"
-              width="200"
+              width="150"
               class="animated-image"
             ></v-img>
           </v-card-text>
@@ -107,8 +107,8 @@ function goToRegister() {
         <v-col class="fullscreen">
           <v-img
             src="/public/มิ้นมงคล.jpg"
-            height="500"
-            width="500"
+            height="400"
+            width="400"
             class="animated-image"
           ></v-img>
         </v-col>

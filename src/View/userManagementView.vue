@@ -6,6 +6,7 @@ import { useUserStore } from "../stores/user.store";
 import Swal from "sweetalert2";
 import UserEditDialog from "../components/dialog/userEditDialog.vue";
 import { User } from "../stores/types/user";
+import router from "../router";
 const userStore = useUserStore();
 
 onMounted(async () => {
@@ -16,6 +17,10 @@ const editUser = (user: User) => {
   userStore.currentUser = user;
   userStore.showDialog = true;
 };
+
+const goToPositionView = () => {
+  router.push("/position");
+}
 
 const deleteUser = async (idUser: number) => {
   Swal.fire({
@@ -52,13 +57,18 @@ const deleteUser = async (idUser: number) => {
             <v-icon style="margin-left: 1%; margin-bottom: 1%">mdi-account-group</v-icon>
           </v-card-title>
           <v-card-text>
+            <v-btn color="#D0E8C5" @click="goToPositionView()" prepend-icon="mdi-briefcase">เพิ่มตำแหน่ง</v-btn>
+          </v-card-text>
+          <v-card-text>
             <v-table color="#E9EFEC" style="width: 100%" class="styled-table">
               <thead>
                 <tr style="background-color: #e1d7c6">
-                  <th style="text-align: center">รหัสบัตรประชาชน</th>
+                  <!-- <th style="text-align: center">รหัสบัตรประชาชน</th> -->
+                  <th style="text-align: center">แผนก</th>
+                  <th style="text-align: center">ตำแหน่ง</th>
                   <th style="text-align: center">ชื่อ-นามสกุล</th>
                   <th style="text-align: center">อีเมล</th>
-                  <th style="text-align: center">เบอร์โทรศัพท์</th>
+                  <!-- <th style="text-align: center">เบอร์โทรศัพท์</th> -->
                   <th style="text-align: center">เพิ่มเติม</th>
                 </tr>
               </thead>
@@ -68,10 +78,14 @@ const deleteUser = async (idUser: number) => {
                 style="overflow-y: scroll"
               >
                 <tr v-if="item.role === 'user'">
-                  <td style="text-align: center">{{ item.thaiId }}</td>
+                  <!-- <td style="text-align: center">{{ item.thaiId }}</td> -->
+                  <td style="text-align: center;color: red;" v-if="item.departmentId === null">ไม่สามารถระบุุแผนกได้</td>
+                  <td style="text-align: center;color: red;" v-if="item.positionId === null">ไม่สามารถระบุุตำแหน่งได้</td>
+                  <td style="text-align: center" v-if="item.departmentId !== null">{{ item.department?.name }}</td>
+                  <td style="text-align: center" v-if="item.positionId !== null">{{ item.position?.name }}</td>
                   <td style="text-align: center">{{ item.name }}</td>
                   <td style="text-align: center">{{ item.email }}</td>
-                  <td style="text-align: center">{{ item.tel }}</td>
+                  <!-- <td style="text-align: center">{{ item.tel }}</td> -->
                   <td style="text-align: center">
                     <v-btn style="margin: 5%" @click="editUser(item)" color="#F0EAAC"
                       ><v-icon>mdi-pencil</v-icon></v-btn

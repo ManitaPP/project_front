@@ -3,14 +3,6 @@ import { onMounted } from "vue";
 import { useAuthStore } from "../../stores/auth.store";
 
 const authStore = useAuthStore();
-onMounted(() => {
-  if (!authStore.currentUser && localStorage.getItem("user")) {
-    const user = JSON.parse(localStorage.getItem("user") || "{}");
-    authStore.currentUser = user;
-  }
-
-  console.log(authStore.currentUser);
-});
 </script>
 <template>
   <v-card class="fill-height">
@@ -42,20 +34,28 @@ onMounted(() => {
             to="/main"
           ></v-list-item>
           <v-list-item
-            v-if="authStore.currentUser?.role === 'admin'"
-            prepend-icon="mdi-home"
-            title="หน้าหลัก"
-            value="หน้าหลัก"
-            link
-            to="/userManagement"
-          ></v-list-item>
-          <v-list-item
             prepend-icon="mdi-account-tie"
             title="ข้อมูลผู้ใช้"
             value="ข้อมูลผู้ใช้"
             link
             to="/profile"
           ></v-list-item>
+          <v-list-item
+            v-if="authStore.currentUser?.role === 'admin'"
+            prepend-icon="mdi-monitor-edit"
+            title="จัดการข้อมูลผู้ใช้งาน"
+            value="จัดการข้อมูลผู้ใช้งาน"
+            link
+            to="/userManagement"
+          ></v-list-item>
+          <!-- <v-list-item
+            v-if="authStore.currentUser?.role === 'admin'"
+            prepend-icon="mdi-briefcase"
+            title="จัดการตำแหน่ง"
+            value="จัดการตำแหน่ง"
+            link
+            to="/position"
+          ></v-list-item> -->
           <v-list-item
             prepend-icon="mdi-exit-to-app"
             title="ออกจากระบบ"

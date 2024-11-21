@@ -114,7 +114,7 @@ const editUser = async () => {
     <SubHeaderView style="position: absolute; top: 0; left: 0; z-index: 1" />
     <v-row>
       <v-col>
-        <v-card>
+        <v-card style="overflow-y: auto">
           <v-card-title style="text-align: center">แก้ไขข้อมูลผู้ใช้</v-card-title>
           <v-card-text>
             <v-row justify="center">

@@ -7,6 +7,7 @@ import RegisterAdminView from "../View/RegisterAdminView.vue";
 import { useAuthStore } from "../stores/auth.store";
 import ForbiddenView from "../View/ForbiddenView.vue";
 import MainView from "../View/MainView.vue";
+import PositionView from "../View/PositionView.vue";
 
 const routes = [
   {
@@ -49,6 +50,11 @@ const routes = [
     path: '/main',
     name: 'main',
     component: MainView,
+  },
+  {
+    path: '/position',
+    name: 'position',
+    component: PositionView,
   },
 ];
 
