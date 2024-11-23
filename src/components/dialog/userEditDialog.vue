@@ -32,22 +32,27 @@ const showDepartmentSelect = computed(() => {
 });
 
 const departmentLeaders = computed(() => {
-  const selectedDepartmentId = departmentStore.departments.find(
-    (d) => d.name === nameDepartment.value
-  )?.id;
   const currentUserDepartmentId = userStore.currentUser?.departmentId;
+  const currentUserId = userStore.currentUser?.userId;
+  const currentUserPositionId = userStore.currentUser?.positionId;
+
   const filteredUsers = userStore.users.filter((user) => {
+    const isCurrentUsersSubordinate = user.leaderId === currentUserId; // Check if the current user is the leader
     return (
       user.role === "user" &&
-      user.positionId != null &&
-      (user.departmentId === selectedDepartmentId ||
-        user.departmentId === currentUserDepartmentId)
+      user.userId !== currentUserId &&
+      user.positionId !== currentUserPositionId &&
+      user.departmentId === currentUserDepartmentId &&
+      user.departmentId != null &&
+      !isCurrentUsersSubordinate // Exclude if current user is their leader
     );
   });
+
   const leader = filteredUsers.map((user) => ({
     name: user.name,
     id: user.userId,
   }));
+
   return leader.map((leader) => leader.name);
 });
 

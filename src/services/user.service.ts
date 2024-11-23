@@ -34,6 +34,9 @@ function getUser() {
     return http.get(`/users/position/${leaderId}`);
   }
 
+  function  updateLeader(leaderId: number, newLeaderId: number) {
+    return http.post(`/users/updateLeader/${leaderId}/${newLeaderId}`);
+  }
 
   export default {
     getUser,
@@ -44,7 +47,8 @@ function getUser() {
     getUserByRole,
     getUserByLeader,
     getPositionByLeader,
-    getOneUser
+    getOneUser,
+    updateLeader
   };
   
 

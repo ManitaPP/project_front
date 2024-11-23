@@ -94,12 +94,19 @@ export const useUserStore = defineStore("useUserStore", () => {
           if(currentUser.value) {
             authStore.currentUser = currentUser.value;
           }
-          console.log("1",currentUser.value);
-          console.log("2",authStore.currentUser);
         } catch (e) {
           console.error("Failed to fetch users:", e);
         }
       };
 
-      return { getUsers, createUser, deleteUser, updateUser, users, currentUser,showDialog ,name, email, password, thaiId, getUserByRole, thaiIdError,nameError,passwordError,emailError, tel,telError, getUserByLeader,getPositionByLeader, getOneById };
+      const updateLeader = async (id:number,newLeader:number) => {
+        try {
+          const res = await userService.updateLeader(id,newLeader);
+          currentUser.value = res.data;
+        } catch (e) {
+          console.error("Failed to fetch users:", e);
+        }
+      };
+
+      return { getUsers, createUser, deleteUser, updateUser, users, currentUser,showDialog ,name, email, password, thaiId, getUserByRole, thaiIdError,nameError,passwordError,emailError, tel,telError, getUserByLeader,getPositionByLeader, getOneById,updateLeader };
 })
