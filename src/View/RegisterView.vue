@@ -125,7 +125,7 @@ const saveUser = () => {
   <v-container fill-height class="register-page">
     <v-row align="center" justify="center">
       <v-col cols="12" sm="8" md="6">
-        <v-card style="text-align: center; margin-top: 5%">
+        <v-card style="text-align: center">
           <v-card-title>ลงทะเบียน</v-card-title>
           <v-card-text>
             <v-form>

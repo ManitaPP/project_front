@@ -25,7 +25,7 @@ function goToRegister() {
   <v-container class="login-page">
     <v-card style="height: 90vh">
       <v-row>
-        <v-col style="margin-top: 5%">
+        <v-col>
           <!-- <v-card> -->
           <v-card-text align="center" justify="center">
             <v-img

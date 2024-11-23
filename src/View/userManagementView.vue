@@ -20,7 +20,7 @@ const editUser = (user: User) => {
 
 const goToPositionView = () => {
   router.push("/position");
-}
+};
 
 const deleteUser = async (idUser: number) => {
   Swal.fire({
@@ -57,7 +57,12 @@ const deleteUser = async (idUser: number) => {
             <v-icon style="margin-left: 1%; margin-bottom: 1%">mdi-account-group</v-icon>
           </v-card-title>
           <v-card-text>
-            <v-btn color="#D0E8C5" @click="goToPositionView()" prepend-icon="mdi-briefcase">เพิ่มตำแหน่ง</v-btn>
+            <v-btn
+              color="#D0E8C5"
+              @click="goToPositionView()"
+              prepend-icon="mdi-briefcase"
+              >เพิ่มตำแหน่ง</v-btn
+            >
           </v-card-text>
           <v-card-text>
             <v-table color="#E9EFEC" style="width: 100%" class="styled-table">
@@ -79,10 +84,24 @@ const deleteUser = async (idUser: number) => {
               >
                 <tr v-if="item.role === 'user'">
                   <!-- <td style="text-align: center">{{ item.thaiId }}</td> -->
-                  <td style="text-align: center;color: red;" v-if="item.departmentId === null">ไม่สามารถระบุุแผนกได้</td>
-                  <td style="text-align: center;color: red;" v-if="item.positionId === null">ไม่สามารถระบุุตำแหน่งได้</td>
-                  <td style="text-align: center" v-if="item.departmentId !== null">{{ item.department?.name }}</td>
-                  <td style="text-align: center" v-if="item.positionId !== null">{{ item.position?.name }}</td>
+                  <td
+                    style="text-align: center; color: red"
+                    v-if="item.departmentId === null"
+                  >
+                    ไม่สามารถระบุแผนกได้
+                  </td>
+                  <td
+                    style="text-align: center; color: red"
+                    v-if="item.positionId === null"
+                  >
+                    ไม่สามารถระบุตำแหน่งได้
+                  </td>
+                  <td style="text-align: center" v-if="item.departmentId !== null">
+                    {{ item.department?.name }}
+                  </td>
+                  <td style="text-align: center" v-if="item.positionId !== null">
+                    {{ item.position?.name }}
+                  </td>
                   <td style="text-align: center">{{ item.name }}</td>
                   <td style="text-align: center">{{ item.email }}</td>
                   <!-- <td style="text-align: center">{{ item.tel }}</td> -->

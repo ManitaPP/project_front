@@ -12,6 +12,6 @@ export interface User {
     leaderId?: number;
     position?: Position;
     department?: Department;
-    positionId?: number;
-    departmentId?: number;
+    positionId?: number | null;
+    departmentId?: number | null;
 }
