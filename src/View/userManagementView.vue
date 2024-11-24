@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import HeaderView from "../components/header/headerView.vue";
 import SubHeaderView from "../components/header/subHeaderView.vue";
 import { useUserStore } from "../stores/user.store";
@@ -8,6 +8,23 @@ import UserEditDialog from "../components/dialog/userEditDialog.vue";
 import { User } from "../stores/types/user";
 import router from "../router";
 const userStore = useUserStore();
+const selectedRole = ref("user");
+const filteredUsers = computed(() => {
+  if (!selectedRole.value) {
+    return userStore.users.sort((a, b) => {
+      if (a.departmentId === null && b.departmentId !== null) return -1;
+      if (a.departmentId !== null && b.departmentId === null) return 1;
+      return 0;
+    });
+  }
+  return userStore.users
+    .filter((user) => user.role === selectedRole.value)
+    .sort((a, b) => {
+      if (a.departmentId === null && b.departmentId !== null) return -1;
+      if (a.departmentId !== null && b.departmentId === null) return 1;
+      return 0;
+    });
+});
 
 onMounted(async () => {
   await userStore.getUsers();
@@ -57,32 +74,46 @@ const deleteUser = async (idUser: number) => {
             <v-icon style="margin-left: 1%; margin-bottom: 1%">mdi-account-group</v-icon>
           </v-card-title>
           <v-card-text>
-            <v-btn
-              color="#D0E8C5"
-              @click="goToPositionView()"
-              prepend-icon="mdi-briefcase"
-              >เพิ่มตำแหน่ง</v-btn
-            >
+            <v-row class="align-center justify-space-between">
+              <v-col cols="12" md="4">
+                <v-select
+                  v-model="selectedRole"
+                  :items="['admin', 'user']"
+                  variant="solo"
+                  label="เลือกตำแหน่ง"
+                  dense
+                  outlined
+                ></v-select>
+              </v-col>
+              <v-col cols="12" md="6" class="text-right">
+                <v-btn
+                  color="#D0E8C5"
+                  @click="goToPositionView()"
+                  prepend-icon="mdi-briefcase"
+                  class="mt-0"
+                >
+                  เพิ่มตำแหน่ง
+                </v-btn>
+              </v-col>
+            </v-row>
           </v-card-text>
           <v-card-text>
             <v-table color="#E9EFEC" style="width: 100%" class="styled-table">
               <thead>
                 <tr style="background-color: #e1d7c6">
-                  <!-- <th style="text-align: center">รหัสบัตรประชาชน</th> -->
                   <th style="text-align: center">แผนก</th>
                   <th style="text-align: center">ตำแหน่ง</th>
                   <th style="text-align: center">ชื่อ-นามสกุล</th>
                   <th style="text-align: center">อีเมล</th>
-                  <!-- <th style="text-align: center">เบอร์โทรศัพท์</th> -->
                   <th style="text-align: center">เพิ่มเติม</th>
                 </tr>
               </thead>
               <tbody
-                v-for="(item, index) of userStore.users"
+                v-for="(item, index) in filteredUsers"
                 :key="index"
                 style="overflow-y: scroll"
               >
-                <tr v-if="item.role === 'user'">
+                <tr>
                   <!-- <td style="text-align: center">{{ item.thaiId }}</td> -->
                   <td
                     style="text-align: center; color: red"

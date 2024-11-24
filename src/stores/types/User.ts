@@ -10,8 +10,8 @@ export interface User {
     tel: string;
     role?: string;
     leaderId?: number;
-    position?: Position;
-    department?: Department;
+    position?: Position | null;
+    department?: Department| null;
     positionId?: number | null;
     departmentId?: number | null;
 }

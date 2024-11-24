@@ -8,6 +8,7 @@ import OrganizationChart from "primevue/organizationchart";
 
 const userStore = useUserStore();
 const authStore = useAuthStore();
+
 interface Node {
   key: string;
   type: string;
@@ -103,6 +104,9 @@ const getNodeStyle = (node) => {
           </div>
         </template>
       </OrganizationChart>
+      <v-dialog v-model="userStore.showDialog" max-width="600px">
+        <UserViewDialog />
+      </v-dialog>
     </v-card>
   </v-container>
 </template>

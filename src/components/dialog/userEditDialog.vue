@@ -23,13 +23,6 @@ const showLeaderSelect = computed(() => {
     return userStore.currentUser?.position?.name !== "CEO";
   }
 });
-const showDepartmentSelect = computed(() => {
-  if (userStore.currentUser!.positionId === null) {
-    return namePosition.value !== "CEO";
-  } else {
-    return userStore.currentUser?.position?.name !== "CEO";
-  }
-});
 
 const departmentLeaders = computed(() => {
   const currentUserDepartmentId = userStore.currentUser?.departmentId;
@@ -149,32 +142,39 @@ const clearMessage = () => {
   userStore.thaiIdError = "";
   userStore.telError = "";
 };
+
 const editUser = async () => {
   if (userStore.currentUser) {
     if (userStore.currentUser.positionId === null) {
+      //กรณีพึ่งเลือกครั้งแรก
       const position = positionStore.positions.find((p) => p.name === namePosition.value);
       userStore.currentUser.positionId = position?.id;
     }
     if (userStore.currentUser.departmentId === null) {
+      //กรณีพึ่งเลือกครั้งแรก
       const department = departmentStore.departments.find(
         (d) => d.name === nameDepartment.value
       );
       userStore.currentUser.departmentId = department?.id;
     }
     if (userStore.currentUser.position?.name === "CEO") {
+      //กรณีพึเลือก CEO department เป็น null
       userStore.currentUser.departmentId = null;
     }
-    userStore.currentUser.leaderId = userStore.users.find(
-      (u) => u.name === selectedLeader.value
-    )?.userId;
-    userStore.updateUser(userStore.currentUser?.userId!, userStore.currentUser);
+
+    if (userStore.currentUser.leaderId !== null) {
+      //มี leaderId อยู่แล้ว
+      console.log("LeaderId");
+      userStore.updateUser(userStore.currentUser?.userId!, userStore.currentUser);
+      userStore.updateLeader(userStore.currentUser.userId!);
+    } else {
+      userStore.currentUser.leaderId = userStore.users.find(
+        //หา leaderId จากชื่อ
+        (u) => u.name === selectedLeader.value
+      )?.userId;
+      userStore.updateUser(userStore.currentUser?.userId!, userStore.currentUser);
+    }
     userStore.showDialog = false;
-    Swal.fire({
-      icon: "success",
-      title: "แก้ไขข้อมูลสำเร็จ",
-      showConfirmButton: false,
-      timer: 1500,
-    });
   }
 };
 
@@ -266,6 +266,18 @@ onMounted(() => {
               variant="solo"
               v-model="userStore.currentUser!.department!.name"
               v-if="userStore.currentUser && userStore.currentUser.department"
+              @change="() => (selectedLeader = '')"
+            ></v-select>
+            <v-select
+              v-if="
+              userStore.currentUser?.position?.name !== 'CEO' &&
+              userStore.currentUser!.department === null
+            "
+              label="แผนก"
+              prepend-icon="mdi-email"
+              :items="departmentStore.departments.map((d) => d.name)"
+              variant="solo"
+              v-model="nameDepartment"
               @change="() => (selectedLeader = '')"
             ></v-select>
           </v-col>

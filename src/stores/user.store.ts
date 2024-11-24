@@ -3,6 +3,7 @@ import { User } from '../stores/types/user';
 import { ref } from 'vue';
 import userService from '../services/user.service';
 import { useAuthStore } from './auth.store';
+import Swal from 'sweetalert2';
 
 export const useUserStore = defineStore("useUserStore", () => {
     const users = ref<User[]>([]);
@@ -42,8 +43,13 @@ export const useUserStore = defineStore("useUserStore", () => {
         try {
           const res = await userService.updateUser(id,user);
           currentUser.value = res.data;
-          console.log("depart", currentUser.value);
           getUsers();
+          Swal.fire({
+            icon: "success",
+            title: "แก้ไขข้อมูลสำเร็จ",
+            showConfirmButton: false,
+            timer: 1500,
+          });
           // getOneById(id);
         } catch (e) {
           console.error("Failed to fetch users:", e);
@@ -99,9 +105,9 @@ export const useUserStore = defineStore("useUserStore", () => {
         }
       };
 
-      const updateLeader = async (id:number,newLeader:number) => {
+      const updateLeader = async (id:number) => {
         try {
-          const res = await userService.updateLeader(id,newLeader);
+          const res = await userService.updateLeader(id);
           currentUser.value = res.data;
         } catch (e) {
           console.error("Failed to fetch users:", e);
