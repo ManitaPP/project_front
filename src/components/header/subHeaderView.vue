@@ -11,8 +11,8 @@ const authStore = useAuthStore();
         expand-on-hover
         rail
         permanent
-        class="fill-height"
-        color="#E1D7C6"
+        class="fill-height d-flex flex-column"
+        color="#E5E1DA"
       >
         <v-list>
           <v-list-item
@@ -21,10 +21,8 @@ const authStore = useAuthStore();
             :title="authStore.currentUser?.name"
           ></v-list-item>
         </v-list>
-
         <v-divider></v-divider>
-
-        <v-list dense nav>
+        <v-list dense nav class="flex-grow-1">
           <v-list-item
             prepend-icon="mdi-home"
             title="หน้าหลัก"
@@ -48,19 +46,15 @@ const authStore = useAuthStore();
             link
             to="/userManagement"
           ></v-list-item>
-          <!-- <v-list-item
-            v-if="authStore.currentUser?.role === 'admin'"
-            prepend-icon="mdi-briefcase"
-            title="จัดการตำแหน่ง"
-            value="จัดการตำแหน่ง"
-            link
-            to="/position"
-          ></v-list-item> -->
+        </v-list>
+        <v-divider></v-divider>
+        <v-list dense nav>
           <v-list-item
             prepend-icon="mdi-exit-to-app"
             title="ออกจากระบบ"
             value="ออกจากระบบ"
             link
+            class="mt-auto"
             @click="authStore.logout()"
           ></v-list-item>
         </v-list>
@@ -68,12 +62,3 @@ const authStore = useAuthStore();
     </v-container>
   </v-card>
 </template>
-
-<style>
-html,
-body,
-#app {
-  height: 100%;
-  margin: 0;
-}
-</style>

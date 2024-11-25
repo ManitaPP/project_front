@@ -3,7 +3,7 @@ import Swal from "sweetalert2";
 import router from "../router";
 import { useUserStore } from "../stores/user.store";
 import { useAuthStore } from "../stores/auth.store";
-import { ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 
 const userStore = useUserStore();
 const authStore = useAuthStore();
@@ -13,13 +13,21 @@ const validateEmail = (email) => {
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   return emailRegex.test(email);
 };
+onMounted(async () => {
+  await userStore.getUsers();
+});
 watch(
   () => userStore.thaiId,
-  (newVal) => {
-    if (newVal.length !== 13) {
-      userStore.thaiIdError = "รหัสบัตรประชาชนต้องมี 13 หลัก";
+  async (newVal) => {
+    const thaiIdRegex = /^\d{13}$/;
+    const isUnique = await checkThaiIdUniqueness(newVal);
+    if (!thaiIdRegex.test(newVal)) {
+      userStore.thaiIdError = "รหัสบัตรประชาชนต้องเป็นตัวเลข 13 หลักเท่านั้น";
+      return;
     }
-    if (newVal.length === 0 || newVal.length === 13) {
+    if (!isUnique) {
+      userStore.thaiIdError = "รหัสบัตรประชาชนนี้มีอยู่ในระบบแล้ว";
+    } else {
       userStore.thaiIdError = "";
     }
   }
@@ -27,10 +35,13 @@ watch(
 watch(
   () => userStore.name,
   (newVal) => {
+    const thaiRegex = /^[ก-๙\s]+$/;
+
     if (newVal.length <= 3) {
       userStore.nameError = "ชื่อ-นามสกุลต้องมีความยาวมากกว่า 3 ตัวอักษร";
-    }
-    if (newVal.length === 0 || newVal.length > 3) {
+    } else if (newVal.length > 0 && !thaiRegex.test(newVal)) {
+      userStore.nameError = "กรุณากรอกชื่อ-นามสกุลเป็นภาษาไทยเท่านั้น";
+    } else {
       userStore.nameError = "";
     }
   }
@@ -60,10 +71,11 @@ watch(
 watch(
   () => userStore.tel,
   (newVal) => {
-    if (newVal && !/^0\d{9}$/.test(newVal)) {
-      userStore.telError = "เบอร์โทรศัพท์ต้องมี 10 หลัก";
-    }
-    if (newVal && newVal.length === 10) {
+    const phoneRegex = /^0\d{9}$/;
+
+    if (newVal && !phoneRegex.test(newVal)) {
+      userStore.telError = "เบอร์โทรศัพท์ต้องเป็นตัวเลขและเริ่มต้นด้วย 0 มี 10 หลัก";
+    } else {
       userStore.telError = "";
     }
   }
@@ -71,6 +83,9 @@ watch(
 const returnToLogin = () => {
   router.push("/login");
   clearData();
+};
+const checkThaiIdUniqueness = async (id: string): Promise<boolean> => {
+  return !userStore.existingThaiIds.includes(id);
 };
 
 const clearData = () => {
@@ -136,65 +151,71 @@ const saveUser = () => {
 </script>
 <template>
   <v-container fill-height class="register-page">
-    <v-row align="center" justify="center">
+    <v-row>
       <v-col cols="12" sm="8" md="6">
         <v-card style="text-align: center">
-          <v-card-title>ลงทะเบียน</v-card-title>
+          <v-card-title align="center">
+            <v-img src="/public/sign-in.png" height="100" width="100" contain></v-img
+          ></v-card-title>
           <v-card-text>
-            <v-form>
-              <v-text-field
-                label="รหัสบัตรประชาชน"
-                required
-                rounded
-                variant="solo"
-                prepend-icon="mdi-card-account-details"
-                :error-messages="userStore.thaiIdError"
-                v-model="userStore.thaiId"
-              ></v-text-field>
-              <v-text-field
-                label="ชื่อ-นามสกุล"
-                variant="solo"
-                rounded
-                prepend-icon="mdi-account-circle"
-                :error-messages="userStore.nameError"
-                v-model="userStore.name"
-                required
-              ></v-text-field>
-              <v-text-field
-                label="เบอร์โทรศัพท์"
-                variant="solo"
-                rounded
-                prepend-icon="mdi-phone"
-                :error-messages="userStore.telError"
-                v-model="userStore.tel"
-                required
-              ></v-text-field>
-              <v-text-field
-                label="อีเมล"
-                required
-                rounded
-                variant="solo"
-                prepend-icon="mdi-email"
-                :error-messages="userStore.emailError"
-                v-model="userStore.email"
-              ></v-text-field>
-              <v-text-field
-                label="รหัสผ่าน"
-                variant="solo"
-                required
-                rounded
-                prepend-icon="mdi-lock"
-                v-model="userStore.password"
-                :error-messages="userStore.passwordError"
-                :type="showPassword ? 'text' : 'password'"
-              >
-                <template #append>
-                  <v-icon @click="togglePasswordVisibility">
-                    {{ showPassword ? "mdi-eye" : "mdi-eye-off" }}
-                  </v-icon>
-                </template>
-              </v-text-field>
-            </v-form>
+            <v-text-field
+              label="รหัสบัตรประชาชน"
+              required
+              rounded
+              variant="solo"
+              prepend-icon="mdi-card-account-details"
+              :error-messages="userStore.thaiIdError"
+              v-model="userStore.thaiId"
+            ></v-text-field>
+            <v-row>
+              <v-col>
+                <v-text-field
+                  label="ชื่อ-นามสกุล"
+                  variant="solo"
+                  rounded
+                  prepend-icon="mdi-account-circle"
+                  :error-messages="userStore.nameError"
+                  v-model="userStore.name"
+                  required
+                ></v-text-field
+              ></v-col>
+              <v-col>
+                <v-text-field
+                  label="เบอร์โทรศัพท์"
+                  variant="solo"
+                  rounded
+                  prepend-icon="mdi-phone"
+                  :error-messages="userStore.telError"
+                  v-model="userStore.tel"
+                  required
+                ></v-text-field
+              ></v-col>
+            </v-row>
+            <v-text-field
+              label="อีเมล"
+              required
+              rounded
+              variant="solo"
+              prepend-icon="mdi-email"
+              :error-messages="userStore.emailError"
+              v-model="userStore.email"
+            ></v-text-field>
+            <v-text-field
+              label="รหัสผ่าน"
+              variant="solo"
+              required
+              rounded
+              prepend-icon="mdi-lock"
+              v-model="userStore.password"
+              :error-messages="userStore.passwordError"
+              :type="showPassword ? 'text' : 'password'"
+            >
+              <template #append>
+                <v-icon @click="togglePasswordVisibility">
+                  {{ showPassword ? "mdi-eye" : "mdi-eye-off" }}
+                </v-icon>
+              </template>
+            </v-text-field>
             <v-card-actions>
               <v-btn @click="returnToLogin()" color="primary">ย้อนกลับ</v-btn>
               <v-spacer></v-spacer>
@@ -203,6 +224,17 @@ const saveUser = () => {
           </v-card-text>
         </v-card>
       </v-col>
+      <v-row class="flex-column justify-center align-center">
+        <v-img
+          src="/public/welcome-back.png"
+          height="150"
+          width="150"
+          contain
+          class="welcome-back-animation"
+        >
+        </v-img>
+        <v-img src="/public/account-login.png" height="300" width="300" contain></v-img>
+      </v-row>
     </v-row>
   </v-container>
 </template>
@@ -212,5 +244,17 @@ const saveUser = () => {
   position: absolute;
   transform: translateY(70%);
   margin-right: 10px;
+}
+.register-page .welcome-back-animation {
+  animation: bounce 2s infinite ease-in-out;
+}
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(20px);
+  }
+  50% {
+    transform: translateY(0);
+  }
 }
 </style>

@@ -22,53 +22,43 @@ function goToRegister() {
 </script>
 
 <template>
-  <v-container class="login-page">
-    <v-card style="height: 90vh">
+  <v-container class="login-page" align="center" justify="center">
+    <v-card style="height: 90vh; width: 40vw" class="transparent-card">
       <v-row>
         <v-col>
-          <!-- <v-card> -->
-          <v-card-text align="center" justify="center">
+          <v-card-text style="margin-top: 3%">
             <v-img
               src="/public/login.png"
+              class="animated-image"
               height="150"
               width="150"
-              class="animated-image"
+              contain
             ></v-img>
           </v-card-text>
           <v-card-text>
-            <v-form>
-              <v-text-field
-                label="Email"
-                required
-                variant="solo"
-                rounded
-                prepend-icon="mdi-account"
-                v-model="email"
-              ></v-text-field>
-              <!-- <v-text-field
-                label="Password"
-                type="password"
-                variant="solo"
-                prepend-icon="mdi-lock"
-                required
-                v-model="password"
-              ></v-text-field> -->
-              <v-text-field
-                label="รหัสผ่าน"
-                variant="solo"
-                required
-                rounded
-                prepend-icon="mdi-lock"
-                v-model="password"
-                :type="showPassword ? 'text' : 'password'"
-              >
-                <template #append>
-                  <v-icon @click="togglePasswordVisibility">
-                    {{ showPassword ? "mdi-eye" : "mdi-eye-off" }}
-                  </v-icon>
-                </template>
-              </v-text-field>
-            </v-form>
+            <v-text-field
+              label="Email"
+              required
+              variant="solo"
+              rounded
+              prepend-icon="mdi-account"
+              v-model="email"
+            ></v-text-field>
+            <v-text-field
+              label="Password"
+              variant="solo"
+              required
+              rounded
+              prepend-icon="mdi-lock"
+              v-model="password"
+              :type="showPassword ? 'text' : 'password'"
+            >
+              <template #append>
+                <v-icon @click="togglePasswordVisibility">
+                  {{ showPassword ? "mdi-eye" : "mdi-eye-off" }}
+                </v-icon>
+              </template>
+            </v-text-field>
             <v-row style="justify-content: center">
               <v-col cols="10">
                 <v-btn
@@ -84,34 +74,27 @@ function goToRegister() {
             </v-row>
             <v-row style="justify-content: center">
               <v-col cols="10">
-                <!-- <v-btn
+                <v-btn
+                  style="color: cornflowerblue"
                   @click="goToRegister()"
-                  size="large"
-                  color="primary"
-                  variant="tonal"
+                  variant="text"
                   rounded
-                  block
-                  >สมัครสมาชิก</v-btn
-                > -->
-                <p
-                  style="text-align: center; color: cornflowerblue"
-                  @click="goToRegister()"
                 >
                   สมัครสมาชิก
-                </p>
+                </v-btn>
               </v-col>
             </v-row>
           </v-card-text>
           <!-- </v-card> -->
         </v-col>
-        <v-col class="fullscreen">
+        <!-- <v-col class="fullscreen">
           <v-img
             src="/public/มิ้นมงคล.jpg"
             height="400"
             width="400"
             class="animated-image"
           ></v-img>
-        </v-col>
+        </v-col> -->
       </v-row>
     </v-card>
   </v-container>
@@ -120,7 +103,7 @@ function goToRegister() {
 <style>
 .login-page .v-text-field .v-input__append {
   position: absolute;
-  left: 42%;
+  left: 85%;
   transform: translateY(70%);
   margin-right: 10px;
 }

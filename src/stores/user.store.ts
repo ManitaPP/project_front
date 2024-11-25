@@ -7,6 +7,7 @@ import Swal from 'sweetalert2';
 
 export const useUserStore = defineStore("useUserStore", () => {
     const users = ref<User[]>([]);
+    const existingThaiIds = ref<string[]>([]);
     const currentUser= ref<User>();
     const showDialog = ref(false);
     const authStore = useAuthStore();
@@ -25,6 +26,7 @@ export const useUserStore = defineStore("useUserStore", () => {
         try {
           const res = await userService.getUser();
           users.value = res.data;
+          existingThaiIds.value = users.value.map((user: { thaiId: string }) => user.thaiId);
         } catch (e) {
           console.error("Failed to fetch users:", e);
         }
@@ -114,6 +116,16 @@ export const useUserStore = defineStore("useUserStore", () => {
         }
       };
 
+      
+      const searchUsers = async (query:string) => {
+        try {
+          const res = await userService.searchUsers(query);
+          users.value = res.data;
+        } catch (e) {
+          console.error("Failed to fetch users:", e);
+        }
+      };
+
       const updateLeader = async (id:number) => {
         try {
           const res = await userService.updateLeader(id);
@@ -124,6 +136,6 @@ export const useUserStore = defineStore("useUserStore", () => {
       };
 
       return { getUsers, createUser, deleteUser, updateUser, users, currentUser,showDialog ,name, email, password, thaiId, getUserByRole, thaiIdError,nameError,passwordError,emailError, tel,telError, getUserByLeader,getPositionByLeader, getOneById,updateLeader,
-        getOneByName
+        getOneByName,existingThaiIds,searchUsers
        };
 })

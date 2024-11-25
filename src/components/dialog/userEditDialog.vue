@@ -93,11 +93,16 @@ watch(
 
 watch(
   () => userStore.currentUser?.thaiId,
-  (newVal) => {
-    if (newVal && newVal.length !== 13) {
-      userStore.thaiIdError = "รหัสบัตรประชาชนต้องมี 13 หลัก";
+  async (newVal) => {
+    const thaiIdRegex = /^\d{13}$/;
+    const isUnique = await checkThaiIdUniqueness(newVal!);
+    if (!thaiIdRegex.test(newVal!)) {
+      userStore.thaiIdError = "รหัสบัตรประชาชนต้องเป็นตัวเลข 13 หลักเท่านั้น";
+      return;
     }
-    if (newVal && newVal.length === 13) {
+    if (!isUnique) {
+      userStore.thaiIdError = "รหัสบัตรประชาชนนี้มีอยู่ในระบบแล้ว";
+    } else {
       userStore.thaiIdError = "";
     }
   }
@@ -105,10 +110,13 @@ watch(
 watch(
   () => userStore.currentUser?.name,
   (newVal) => {
-    if (newVal && newVal.length <= 3) {
+    const thaiRegex = /^[ก-๙\s]+$/;
+
+    if (newVal!.length <= 3) {
       userStore.nameError = "ชื่อ-นามสกุลต้องมีความยาวมากกว่า 3 ตัวอักษร";
-    }
-    if (newVal && newVal.length > 3) {
+    } else if (newVal!.length > 0 && !thaiRegex.test(newVal!)) {
+      userStore.nameError = "กรุณากรอกชื่อ-นามสกุลเป็นภาษาไทยเท่านั้น";
+    } else {
       userStore.nameError = "";
     }
   }
@@ -116,10 +124,11 @@ watch(
 watch(
   () => userStore.currentUser?.tel,
   (newVal) => {
-    if (newVal && !/^0\d{9}$/.test(newVal)) {
-      userStore.telError = "เบอร์โทรศัพท์ต้องมี 10 หลัก";
-    }
-    if (newVal && newVal.length === 10) {
+    const phoneRegex = /^0\d{9}$/;
+
+    if (newVal && !phoneRegex.test(newVal)) {
+      userStore.telError = "เบอร์โทรศัพท์ต้องเป็นตัวเลขและเริ่มต้นด้วย 0 มี 10 หลัก";
+    } else {
       userStore.telError = "";
     }
   }
@@ -177,7 +186,9 @@ const editUser = async () => {
     userStore.showDialog = false;
   }
 };
-
+const checkThaiIdUniqueness = async (id: string): Promise<boolean> => {
+  return !userStore.existingThaiIds.includes(id);
+};
 onMounted(() => {
   departmentStore.getDepartments();
   positionStore.getPositions();
@@ -270,7 +281,7 @@ onMounted(() => {
             ></v-select>
             <v-select
               v-if="
-              userStore.currentUser?.position?.name !== 'CEO' &&
+              userStore.currentUser!.positionId !== null && userStore.currentUser?.position?.name !== 'CEO' &&
               userStore.currentUser!.department === null
             "
               label="แผนก"

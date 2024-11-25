@@ -96,8 +96,10 @@ const showDialog = (data: any) => {
   <HeaderView />
   <v-container>
     <SubHeaderView style="position: absolute; top: 0; left: 0; z-index: 1" />
-    <v-card align="center" justify="center" style="overflow-y: auto">
-      <v-card-title style="text-align: center">แผนผังองค์กร</v-card-title>
+    <v-card align="center" justify="center" style="overflow-y: auto; max-height: 80vh">
+      <v-card-title style="text-align: center; font-weight: bold">
+        แผนผังองค์กร
+      </v-card-title>
       <OrganizationChart :value="data" collapsible>
         <template #person="slotProps">
           <div

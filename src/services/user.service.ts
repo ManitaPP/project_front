@@ -7,6 +7,10 @@ function getUser() {
   function getOneUser(id: number) {
     return http.get(`/users/${id}`);
   }
+
+  function searchUsers(query: string) {
+    return http.get(`/users/search/${query}`);
+  }
   function getOneByName(name: string) {
     return http.get(`/users/name/${name}`);
   }
@@ -51,7 +55,8 @@ function getUser() {
     getPositionByLeader,
     getOneUser,
     updateLeader,
-    getOneByName
+    getOneByName,
+    searchUsers
   };
   
 

@@ -9,6 +9,9 @@ import { User } from "../stores/types/user";
 import router from "../router";
 const userStore = useUserStore();
 const selectedRole = ref("user");
+const search = ref("");
+const currentPage = ref(1);
+const itemsPerPage = ref(4);
 const filteredUsers = computed(() => {
   if (!selectedRole.value) {
     return userStore.users.sort((a, b) => {
@@ -25,6 +28,22 @@ const filteredUsers = computed(() => {
       return 0;
     });
 });
+// const paginatedUsers = computed(() => {
+//   const start = (currentPage.value - 1) * itemsPerPage.value;
+//   const end = start + itemsPerPage.value;
+//   return filteredUsers.value.slice(start, end);
+// });
+
+// const totalPages = computed(() => {
+//   return Math.ceil(filteredUsers.value.length / itemsPerPage.value);
+// });
+const searchData = () => {
+  if (search.value.trim() === "") {
+    userStore.getUsers();
+  } else {
+    userStore.searchUsers(search.value);
+  }
+};
 
 onMounted(async () => {
   await userStore.getUsers();
@@ -68,14 +87,14 @@ const deleteUser = async (idUser: number) => {
     <SubHeaderView style="position: absolute; top: 0; left: 0; z-index: 1" />
     <v-row>
       <v-col col="12">
-        <v-card>
+        <v-card style="overflow-y: auto; max-height: 80vh">
           <v-card-title style="text-align: center"
             >ข้อมูลผู้ใช้ทั้งหมด
             <v-icon style="margin-left: 1%; margin-bottom: 1%">mdi-account-group</v-icon>
           </v-card-title>
           <v-card-text>
             <v-row class="align-center justify-space-between">
-              <v-col cols="12" md="4">
+              <v-col cols="12" md="3">
                 <v-select
                   v-model="selectedRole"
                   :items="['admin', 'user']"
@@ -85,7 +104,16 @@ const deleteUser = async (idUser: number) => {
                   outlined
                 ></v-select>
               </v-col>
-              <v-col cols="12" md="6" class="text-right">
+              <v-col cols="12" md="3">
+                <v-text-field
+                  label="ค้นหา"
+                  variant="solo"
+                  prepend-icon="mdi-magnify"
+                  v-model="search"
+                  @input="searchData()"
+                ></v-text-field>
+              </v-col>
+              <v-col class="text-right">
                 <v-btn
                   color="#D0E8C5"
                   @click="goToPositionView()"
@@ -98,17 +126,26 @@ const deleteUser = async (idUser: number) => {
             </v-row>
           </v-card-text>
           <v-card-text>
-            <v-table color="#E9EFEC" style="width: 100%" class="styled-table">
+            <v-table style="width: 100%" class="styled-table">
               <thead>
-                <tr style="background-color: #e1d7c6">
-                  <th style="text-align: center">แผนก</th>
-                  <th style="text-align: center">ตำแหน่ง</th>
+                <tr style="background-color: #e5e1da">
+                  <th style="text-align: center" v-if="selectedRole === 'user'">แผนก</th>
+                  <th style="text-align: center" v-if="selectedRole === 'user'">
+                    ตำแหน่ง
+                  </th>
+                  <th style="text-align: center" v-if="selectedRole === 'admin'">
+                    รหัสบัตรประชาชน
+                  </th>
+                  <th style="text-align: center" v-if="selectedRole === 'admin'">
+                    เบอร์โทรศัพท์
+                  </th>
                   <th style="text-align: center">ชื่อ-นามสกุล</th>
                   <th style="text-align: center">อีเมล</th>
                   <th style="text-align: center">เพิ่มเติม</th>
                 </tr>
               </thead>
               <tbody
+                v-if="filteredUsers.length > 0"
                 v-for="(item, index) in filteredUsers"
                 :key="index"
                 style="overflow-y: scroll"
@@ -117,21 +154,33 @@ const deleteUser = async (idUser: number) => {
                   <!-- <td style="text-align: center">{{ item.thaiId }}</td> -->
                   <td
                     style="text-align: center; color: red"
-                    v-if="item.departmentId === null"
+                    v-if="item.departmentId === null && selectedRole === 'user'"
                   >
                     ไม่สามารถระบุแผนกได้
                   </td>
                   <td
                     style="text-align: center; color: red"
-                    v-if="item.positionId === null"
+                    v-if="item.positionId === null && selectedRole === 'user'"
                   >
                     ไม่สามารถระบุตำแหน่งได้
                   </td>
-                  <td style="text-align: center" v-if="item.departmentId !== null">
+                  <td
+                    style="text-align: center"
+                    v-if="item.departmentId !== null && selectedRole === 'user'"
+                  >
                     {{ item.department?.name }}
                   </td>
-                  <td style="text-align: center" v-if="item.positionId !== null">
+                  <td
+                    style="text-align: center"
+                    v-if="item.positionId !== null && selectedRole === 'user'"
+                  >
                     {{ item.position?.name }}
+                  </td>
+                  <td style="text-align: center" v-if="selectedRole === 'admin'">
+                    {{ item.thaiId }}
+                  </td>
+                  <td style="text-align: center" v-if="selectedRole === 'admin'">
+                    {{ item.tel }}
                   </td>
                   <td style="text-align: center">{{ item.name }}</td>
                   <td style="text-align: center">{{ item.email }}</td>
@@ -149,7 +198,18 @@ const deleteUser = async (idUser: number) => {
                   </td>
                 </tr>
               </tbody>
+              <tbody v-else>
+                <tr>
+                  <td colspan="7" style="text-align: center; color: red">ไม่พบข้อมูล</td>
+                </tr>
+              </tbody>
             </v-table>
+            <!-- <v-pagination
+              v-model="currentPage"
+              :length="totalPages"
+              total-visible="4"
+              class="mt-4"
+            ></v-pagination> -->
           </v-card-text>
         </v-card>
       </v-col>
