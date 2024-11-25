@@ -5,6 +5,7 @@ import SubHeaderView from "../components/header/subHeaderView.vue";
 import { useUserStore } from "../stores/user.store";
 import { useAuthStore } from "../stores/auth.store";
 import OrganizationChart from "primevue/organizationchart";
+import viewDialog from "../components/dialog/viewDialog.vue";
 
 const userStore = useUserStore();
 const authStore = useAuthStore();
@@ -84,6 +85,11 @@ const getNodeStyle = (node) => {
       };
   }
 };
+
+const showDialog = (data: any) => {
+  userStore.showDialog = true;
+  userStore.name = data;
+};
 </script>
 
 <template>
@@ -97,6 +103,7 @@ const getNodeStyle = (node) => {
           <div
             class="flex flex-col items-center"
             :style="getNodeStyle(slotProps.node.data)"
+            @click="showDialog(slotProps.node.label)"
           >
             <div class="mt-2 font-medium text-lg">{{ slotProps.node.label }}</div>
             <div class="mt-2 font-medium text-lg">{{ slotProps.node.data }}</div>
@@ -105,7 +112,7 @@ const getNodeStyle = (node) => {
         </template>
       </OrganizationChart>
       <v-dialog v-model="userStore.showDialog" max-width="600px">
-        <UserViewDialog />
+        <viewDialog />
       </v-dialog>
     </v-card>
   </v-container>

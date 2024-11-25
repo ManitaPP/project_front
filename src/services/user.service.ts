@@ -4,9 +4,11 @@ import http from "./axios";
 function getUser() {
     return http.get("/users");
   }
-
   function getOneUser(id: number) {
     return http.get(`/users/${id}`);
+  }
+  function getOneByName(name: string) {
+    return http.get(`/users/name/${name}`);
   }
   function deleteUser(id: number) {
     return http.delete(`/users/${id}`);
@@ -48,7 +50,8 @@ function getUser() {
     getUserByLeader,
     getPositionByLeader,
     getOneUser,
-    updateLeader
+    updateLeader,
+    getOneByName
   };
   
 

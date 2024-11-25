@@ -229,11 +229,11 @@ onMounted(() => {
             ></v-text-field
           ></v-col>
         </v-row>
-        <v-row>
+        <v-row v-if="userStore.currentUser?.role === 'user'">
           <v-col col="6">
             <v-select
               label="ตำแหน่ง"
-              prepend-icon="mdi-email"
+              prepend-icon="mdi-briefcase"
               :items="positionStore.positions.map((p) => p.name)"
               variant="solo"
               v-if="userStore.currentUser!.positionId === null"
@@ -242,7 +242,7 @@ onMounted(() => {
             ></v-select>
             <v-select
               label="ตำแหน่ง"
-              prepend-icon="mdi-email"
+              prepend-icon="mdi-briefcase"
               :items="positionStore.positions.map((p) => p.name)"
               variant="solo"
               v-model="userStore.currentUser!.position!.name"
@@ -253,7 +253,7 @@ onMounted(() => {
           <v-col col="6">
             <v-select
               label="แผนก"
-              prepend-icon="mdi-email"
+              prepend-icon="mdi-account-group"
               :items="departmentStore.departments.map((d) => d.name)"
               variant="solo"
               v-if="userStore.currentUser!.positionId === null"
@@ -261,7 +261,7 @@ onMounted(() => {
             ></v-select>
             <v-select
               label="แผนก"
-              prepend-icon="mdi-email"
+              prepend-icon="mdi-account-group"
               :items="departmentStore.departments.map((d) => d.name)"
               variant="solo"
               v-model="userStore.currentUser!.department!.name"
@@ -274,7 +274,7 @@ onMounted(() => {
               userStore.currentUser!.department === null
             "
               label="แผนก"
-              prepend-icon="mdi-email"
+              prepend-icon="mdi-account-group"
               :items="departmentStore.departments.map((d) => d.name)"
               variant="solo"
               v-model="nameDepartment"

@@ -38,6 +38,17 @@ watch(
   }
 );
 watch(
+  () => userStore.tel,
+  (newVal) => {
+    if (newVal && !/^0\d{9}$/.test(newVal)) {
+      userStore.telError = "เบอร์โทรศัพท์ต้องมี 10 หลัก";
+    }
+    if (newVal && newVal.length === 10) {
+      userStore.telError = "";
+    }
+  }
+);
+watch(
   () => userStore.email,
   (newVal) => {
     if (validateEmail(newVal) || newVal.length === 0) {
@@ -67,7 +78,8 @@ const saveUser = () => {
     userStore.name === "" ||
     userStore.email === "" ||
     userStore.password === "" ||
-    userStore.thaiId === ""
+    userStore.thaiId === "" ||
+    userStore.tel === ""
   ) {
     Swal.fire({
       icon: "error",

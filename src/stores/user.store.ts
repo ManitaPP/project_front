@@ -105,6 +105,15 @@ export const useUserStore = defineStore("useUserStore", () => {
         }
       };
 
+      const getOneByName = async (name:string) => {
+        try {
+          const res = await userService.getOneByName(name);
+          currentUser.value = res.data;
+        } catch (e) {
+          console.error("Failed to fetch users:", e);
+        }
+      };
+
       const updateLeader = async (id:number) => {
         try {
           const res = await userService.updateLeader(id);
@@ -114,5 +123,7 @@ export const useUserStore = defineStore("useUserStore", () => {
         }
       };
 
-      return { getUsers, createUser, deleteUser, updateUser, users, currentUser,showDialog ,name, email, password, thaiId, getUserByRole, thaiIdError,nameError,passwordError,emailError, tel,telError, getUserByLeader,getPositionByLeader, getOneById,updateLeader };
+      return { getUsers, createUser, deleteUser, updateUser, users, currentUser,showDialog ,name, email, password, thaiId, getUserByRole, thaiIdError,nameError,passwordError,emailError, tel,telError, getUserByLeader,getPositionByLeader, getOneById,updateLeader,
+        getOneByName
+       };
 })
