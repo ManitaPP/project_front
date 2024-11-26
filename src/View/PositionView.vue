@@ -62,6 +62,7 @@ const savePosition = () => {
                 ><v-text-field
                   label="ตำแหน่ง"
                   variant="solo"
+                  rounded
                   prepend-icon="mdi-card-account-details"
                   v-model="positionStore.namePosition"
                 ></v-text-field
@@ -71,6 +72,7 @@ const savePosition = () => {
               <v-col col="6" sm="6"
                 ><v-text-field
                   label="คำอธิบาย"
+                  rounded
                   variant="solo"
                   v-model="positionStore.description"
                   prepend-icon="mdi-card-account-details"
@@ -81,6 +83,7 @@ const savePosition = () => {
               <v-col col="6" sm="6"
                 ><v-text-field
                   label="แผนก"
+                  rounded
                   variant="solo"
                   v-model="departmentStore.nameDepartment"
                   prepend-icon="mdi-card-account-details"

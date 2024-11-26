@@ -12,7 +12,6 @@ const authStore = useAuthStore();
         rail
         permanent
         class="fill-height d-flex flex-column"
-        color="#849fb6"
       >
         <v-list>
           <v-list-item
@@ -33,8 +32,8 @@ const authStore = useAuthStore();
           ></v-list-item>
           <v-list-item
             prepend-icon="mdi-account-tie"
-            title="ข้อมูลผู้ใช้"
-            value="ข้อมูลผู้ใช้"
+            title="โปรไฟล์"
+            value="โปรไฟล์"
             link
             to="/profile"
           ></v-list-item>

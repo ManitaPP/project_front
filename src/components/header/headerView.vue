@@ -12,7 +12,7 @@ const themeIcon = computed(() =>
 );
 </script>
 <template>
-  <v-app-bar :elevation="2" style="background-image: url(/public/city.jpg)">
+  <v-app-bar :elevation="2">
     <!-- <template v-slot:prepend> </template> -->
     <!-- <v-img src="/public//application.png" style="height: 70%" class="align-left"></v-img> -->
     <v-app-bar-title style="font-weight: bold">CDG </v-app-bar-title>

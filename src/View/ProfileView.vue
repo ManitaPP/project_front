@@ -115,7 +115,7 @@ const editUser = async () => {
     <v-row>
       <v-col>
         <v-card class="glass-card" style="overflow-y: auto; max-height: 80vh">
-          <v-card-title style="text-align: center">แก้ไขข้อมูลผู้ใช้</v-card-title>
+          <v-card-title style="text-align: center">ข้อมูลผู้ใช้</v-card-title>
           <v-card-text>
             <v-row justify="center">
               <v-col col="6" sm="6"

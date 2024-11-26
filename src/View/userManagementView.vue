@@ -9,34 +9,55 @@ import { User } from "../stores/types/user";
 import router from "../router";
 const userStore = useUserStore();
 const selectedRole = ref("user");
+const selectedDepartment = ref("ไม่เลือกแผนก");
+const selectedPosition = ref("ไม่เลือกตำแหน่ง");
 const search = ref("");
-const currentPage = ref(1);
-const itemsPerPage = ref(4);
-const filteredUsers = computed(() => {
-  if (!selectedRole.value) {
-    return userStore.users.sort((a, b) => {
-      if (a.departmentId === null && b.departmentId !== null) return -1;
-      if (a.departmentId !== null && b.departmentId === null) return 1;
-      return 0;
-    });
+
+const departmentOptions = computed(() => {
+  const uniqueDepartments = new Set(
+    userStore.users
+      .map((u) => u.department?.name)
+      .filter((name) => name !== undefined && name !== null)
+  );
+  return ["ไม่เลือกแผนก", "ไม่สามารถระบุได้", ...Array.from(uniqueDepartments)];
+});
+
+const positionOptions = computed(() => {
+  const uniquePositions = new Set(
+    userStore.users
+      .map((u) => u.position?.name)
+      .filter((name) => name !== undefined && name !== null)
+  );
+
+  if (selectedDepartment.value !== "ไม่เลือกแผนก") {
+    uniquePositions.delete("CEO");
   }
+
+  return ["ไม่เลือกตำแหน่ง", "ไม่สามารถระบุได้", ...Array.from(uniquePositions)];
+});
+const filteredUsers = computed(() => {
   return userStore.users
-    .filter((user) => user.role === selectedRole.value)
+    .filter((user) => {
+      const matchesRole = !selectedRole.value || user.role === selectedRole.value;
+      const matchesDepartment =
+        !selectedDepartment.value ||
+        selectedDepartment.value === "ไม่เลือกแผนก" ||
+        (selectedDepartment.value === "ไม่สามารถระบุได้" && user.departmentId === null) ||
+        user.department?.name === selectedDepartment.value;
+      const matchesPosition =
+        !selectedPosition.value ||
+        selectedPosition.value === "ไม่เลือกตำแหน่ง" ||
+        (selectedPosition.value === "ไม่สามารถระบุได้" && user.positionId === null) ||
+        user.position?.name === selectedPosition.value;
+      return matchesRole && matchesDepartment && matchesPosition;
+    })
     .sort((a, b) => {
       if (a.departmentId === null && b.departmentId !== null) return -1;
       if (a.departmentId !== null && b.departmentId === null) return 1;
       return 0;
     });
 });
-// const paginatedUsers = computed(() => {
-//   const start = (currentPage.value - 1) * itemsPerPage.value;
-//   const end = start + itemsPerPage.value;
-//   return filteredUsers.value.slice(start, end);
-// });
 
-// const totalPages = computed(() => {
-//   return Math.ceil(filteredUsers.value.length / itemsPerPage.value);
-// });
 const searchData = () => {
   if (search.value.trim() === "") {
     userStore.getUsers();
@@ -94,10 +115,30 @@ const deleteUser = async (idUser: number) => {
           </v-card-title>
           <v-card-text>
             <v-row class="align-center justify-space-between">
-              <v-col cols="12" md="3">
+              <v-col cols="12" md="2">
                 <v-select
                   v-model="selectedRole"
                   :items="['admin', 'user']"
+                  variant="outlined"
+                  label="เลือกบทบาท"
+                  dense
+                  rounded
+                ></v-select>
+              </v-col>
+              <v-col cols="12" md="2" v-if="selectedRole === 'user'">
+                <v-select
+                  v-model="selectedDepartment"
+                  :items="departmentOptions"
+                  variant="outlined"
+                  label="เลือกแผนก"
+                  dense
+                  rounded
+                ></v-select>
+              </v-col>
+              <v-col cols="12" md="2" v-if="selectedRole === 'user'">
+                <v-select
+                  v-model="selectedPosition"
+                  :items="positionOptions"
                   variant="outlined"
                   label="เลือกตำแหน่ง"
                   dense
@@ -108,7 +149,7 @@ const deleteUser = async (idUser: number) => {
                 <v-text-field
                   label="ค้นหา"
                   variant="outlined"
-                  prepend-icon="mdi-magnify"
+                  prepend-inner-icon="mdi-magnify"
                   v-model="search"
                   rounded
                   @input="searchData()"
