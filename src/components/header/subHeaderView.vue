@@ -12,7 +12,7 @@ const authStore = useAuthStore();
         rail
         permanent
         class="fill-height d-flex flex-column"
-        color="#E5E1DA"
+        color="#849fb6"
       >
         <v-list>
           <v-list-item

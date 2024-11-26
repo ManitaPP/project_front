@@ -96,7 +96,12 @@ const showDialog = (data: any) => {
   <HeaderView />
   <v-container>
     <SubHeaderView style="position: absolute; top: 0; left: 0; z-index: 1" />
-    <v-card align="center" justify="center" style="overflow-y: auto; max-height: 80vh">
+    <v-card
+      class="glass-card"
+      align="center"
+      justify="center"
+      style="overflow-y: auto; max-height: 80vh"
+    >
       <v-card-title style="text-align: center; font-weight: bold">
         แผนผังองค์กร
       </v-card-title>
@@ -119,3 +124,14 @@ const showDialog = (data: any) => {
     </v-card>
   </v-container>
 </template>
+<style scoped>
+.glass-card {
+  background: rgba(255, 255, 255, 0.2); /* ตั้งค่าความโปร่งแสงของพื้นหลัง */
+  backdrop-filter: blur(10px); /* ใช้ฟิลเตอร์ทำให้พื้นหลังมัว */
+  border-radius: 15px; /* กำหนดขอบเรียบร้อย */
+  border: 1px solid rgba(255, 255, 255, 0.3); /* ขอบโปร่งแสง */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* เงาสำหรับเพิ่มมิติ */
+  padding: 20px; /* ระยะห่างภายใน */
+  color: #fff; /* สีตัวอักษร */
+}
+</style>

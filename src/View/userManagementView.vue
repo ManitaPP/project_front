@@ -87,7 +87,7 @@ const deleteUser = async (idUser: number) => {
     <SubHeaderView style="position: absolute; top: 0; left: 0; z-index: 1" />
     <v-row>
       <v-col col="12">
-        <v-card style="overflow-y: auto; max-height: 80vh">
+        <v-card class="glass-card" style="overflow-y: auto; max-height: 80vh">
           <v-card-title style="text-align: center"
             >ข้อมูลผู้ใช้ทั้งหมด
             <v-icon style="margin-left: 1%; margin-bottom: 1%">mdi-account-group</v-icon>
@@ -98,18 +98,19 @@ const deleteUser = async (idUser: number) => {
                 <v-select
                   v-model="selectedRole"
                   :items="['admin', 'user']"
-                  variant="solo"
+                  variant="outlined"
                   label="เลือกตำแหน่ง"
                   dense
-                  outlined
+                  rounded
                 ></v-select>
               </v-col>
               <v-col cols="12" md="3">
                 <v-text-field
                   label="ค้นหา"
-                  variant="solo"
+                  variant="outlined"
                   prepend-icon="mdi-magnify"
                   v-model="search"
+                  rounded
                   @input="searchData()"
                 ></v-text-field>
               </v-col>
@@ -119,6 +120,7 @@ const deleteUser = async (idUser: number) => {
                   @click="goToPositionView()"
                   prepend-icon="mdi-briefcase"
                   class="mt-0"
+                  rounded
                 >
                   เพิ่มตำแหน่ง
                 </v-btn>
@@ -128,7 +130,7 @@ const deleteUser = async (idUser: number) => {
           <v-card-text>
             <v-table style="width: 100%" class="styled-table">
               <thead>
-                <tr style="background-color: #e5e1da">
+                <tr style="background-color: #849fb6">
                   <th style="text-align: center" v-if="selectedRole === 'user'">แผนก</th>
                   <th style="text-align: center" v-if="selectedRole === 'user'">
                     ตำแหน่ง
@@ -141,7 +143,7 @@ const deleteUser = async (idUser: number) => {
                   </th>
                   <th style="text-align: center">ชื่อ-นามสกุล</th>
                   <th style="text-align: center">อีเมล</th>
-                  <th style="text-align: center">เพิ่มเติม</th>
+                  <th style="text-align: center"></th>
                 </tr>
               </thead>
               <tbody
@@ -186,10 +188,14 @@ const deleteUser = async (idUser: number) => {
                   <td style="text-align: center">{{ item.email }}</td>
                   <!-- <td style="text-align: center">{{ item.tel }}</td> -->
                   <td style="text-align: center">
-                    <v-btn style="margin: 5%" @click="editUser(item)" color="#F0EAAC"
+                    <v-btn
+                      style="margin: 5%"
+                      rounded
+                      @click="editUser(item)"
+                      color="#F0EAAC"
                       ><v-icon>mdi-pencil</v-icon></v-btn
                     >
-                    <v-btn @click="deleteUser(item.userId!)" color="#F0A4AC"
+                    <v-btn @click="deleteUser(item.userId!)" rounded color="#F0A4AC"
                       ><v-icon>mdi-trash-can</v-icon></v-btn
                     >
                     <v-dialog v-model="userStore.showDialog">
@@ -217,13 +223,7 @@ const deleteUser = async (idUser: number) => {
   </v-container>
 </template>
 
-<style>
-.vertical-divider {
-  border-left: 1px solid #e0e0e0;
-  /* สีของเส้นแบ่ง */
-  height: auto;
-  /* ให้สูงตามความสูงของ col */
-}
+<style scoped>
 .styled-table th,
 .styled-table td {
   text-align: center;

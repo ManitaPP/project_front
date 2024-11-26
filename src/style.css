@@ -1,7 +1,13 @@
-/* :root {
-  .container {
-    display: flex;
-    flex-wrap: wrap;
-    overflow-x: hidden; /* จำกัดการขยาย */
-  /* }
-}  */ 
+:root {
+  @import url("https://fonts.googleapis.com/css2?family=Kanit:wght@300&display=swap");
+
+body {
+  font-family: "Kanit", sans-serif;
+}
+.glass-card {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+}
+}  

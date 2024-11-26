@@ -114,7 +114,7 @@ const editUser = async () => {
     <SubHeaderView style="position: absolute; top: 0; left: 0; z-index: 1" />
     <v-row>
       <v-col>
-        <v-card style="overflow-y: auto; max-height: 80vh">
+        <v-card class="glass-card" style="overflow-y: auto; max-height: 80vh">
           <v-card-title style="text-align: center">แก้ไขข้อมูลผู้ใช้</v-card-title>
           <v-card-text>
             <v-row justify="center">
@@ -122,6 +122,7 @@ const editUser = async () => {
                 ><v-text-field
                   label="รหัสบัตรประชาชน"
                   variant="solo"
+                  rounded
                   prepend-icon="mdi-card-account-details"
                   :error-messages="userStore.thaiIdError"
                   v-model="userStore.currentUser!.thaiId"
@@ -133,6 +134,7 @@ const editUser = async () => {
                 ><v-text-field
                   label="ชื่อ-นามสกุล"
                   variant="solo"
+                  rounded
                   prepend-icon="mdi-account-circle"
                   :error-messages="userStore.nameError"
                   v-model="userStore.currentUser!.name"
@@ -144,6 +146,7 @@ const editUser = async () => {
                 ><v-text-field
                   label="เบอร์โรศัพท์"
                   variant="solo"
+                  rounded
                   prepend-icon="mdi-phone"
                   :error-messages="userStore.telError"
                   v-model="userStore.currentUser!.tel"
@@ -155,6 +158,7 @@ const editUser = async () => {
                 ><v-text-field
                   label="อีเมล"
                   variant="solo"
+                  rounded
                   prepend-icon="mdi-email"
                   :error-messages="userStore.emailError"
                   v-model="userStore.currentUser!.email"
@@ -172,3 +176,4 @@ const editUser = async () => {
     </v-row>
   </v-container>
 </template>
+<style scoped></style>

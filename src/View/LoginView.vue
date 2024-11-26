@@ -23,30 +23,30 @@ function goToRegister() {
 
 <template>
   <v-container class="login-page" align="center" justify="center">
-    <v-card style="height: 90vh; width: 40vw" class="transparent-card">
+    <v-card style="height: auto; width: 40vw; margin-top: 20px" class="glass-card">
       <v-row>
-        <v-col>
-          <v-card-text style="margin-top: 3%">
-            <v-img
-              src="/public/login.png"
-              class="animated-image"
-              height="150"
-              width="150"
-              contain
-            ></v-img>
-          </v-card-text>
+        <v-col col="auto">
+          <v-img
+            src="/public/login1.png"
+            height="150"
+            width="150"
+            contain
+            class="animated-image"
+          ></v-img>
           <v-card-text>
             <v-text-field
+              style="width: 80%"
               label="Email"
               required
-              variant="solo"
+              variant="outlined"
               rounded
               prepend-icon="mdi-account"
               v-model="email"
             ></v-text-field>
             <v-text-field
+              style="width: 80%"
               label="Password"
-              variant="solo"
+              variant="outlined"
               required
               rounded
               prepend-icon="mdi-lock"
@@ -60,29 +60,22 @@ function goToRegister() {
               </template>
             </v-text-field>
             <v-row style="justify-content: center">
-              <v-col cols="10">
-                <v-btn
-                  @click="summit()"
-                  size="large"
-                  color="success"
-                  variant="tonal"
-                  block
-                  rounded
+              <v-col cols="8">
+                <v-btn @click="summit()" size="large" block rounded color="#CDC1FF"
                   >เข้าสู่ระบบ</v-btn
                 >
               </v-col>
             </v-row>
-            <v-row style="justify-content: center">
-              <v-col cols="10">
-                <v-btn
-                  style="color: cornflowerblue"
-                  @click="goToRegister()"
-                  variant="text"
-                  rounded
-                >
-                  สมัครสมาชิก
-                </v-btn>
-              </v-col>
+            <v-row justify="center" align="center" class="d-flex">
+              <span>ยังไม่มีบัญชีผู้ใช้?</span>
+              <v-btn
+                style="color: cornflowerblue; margin-left: -15px"
+                @click="goToRegister()"
+                variant="text"
+                rounded
+              >
+                สมัครสมาชิก
+              </v-btn>
             </v-row>
           </v-card-text>
           <!-- </v-card> -->
@@ -103,14 +96,12 @@ function goToRegister() {
 <style>
 .login-page .v-text-field .v-input__append {
   position: absolute;
-  left: 85%;
+  left: 75%;
   transform: translateY(70%);
-  margin-right: 10px;
 }
 .animated-image {
   animation: bounce 2s infinite;
 }
-
 @keyframes bounce {
   0%,
   100% {
@@ -119,15 +110,5 @@ function goToRegister() {
   50% {
     transform: translateY(-30px);
   }
-}
-.fullscreen {
-  justify-content: center;
-  align-items: center;
-  margin: 0;
-  padding: 0;
-  background-color: #ede8dc;
-  width: 100vw;
-  height: 100vh;
-  display: flex;
 }
 </style>

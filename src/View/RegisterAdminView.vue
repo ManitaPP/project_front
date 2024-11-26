@@ -105,6 +105,7 @@ const saveUser = () => {
       showConfirmButton: false,
       timer: 1500,
     });
+    clearData();
     return;
   }
   if (
@@ -153,7 +154,7 @@ const clearData = () => {
   <v-container fill-height class="register-page">
     <v-row>
       <v-col cols="12" sm="8" md="6">
-        <v-card style="text-align: center">
+        <v-card style="text-align: center" class="glass-card">
           <v-card-title align="center">
             <v-img src="/public/sign-in.png" height="100" width="100" contain></v-img
           ></v-card-title>
@@ -162,7 +163,7 @@ const clearData = () => {
               label="รหัสบัตรประชาชน"
               required
               rounded
-              variant="solo"
+              variant="outlined"
               prepend-icon="mdi-card-account-details"
               :error-messages="userStore.thaiIdError"
               v-model="userStore.thaiId"
@@ -171,7 +172,7 @@ const clearData = () => {
               <v-col>
                 <v-text-field
                   label="ชื่อ-นามสกุล"
-                  variant="solo"
+                  variant="outlined"
                   rounded
                   prepend-icon="mdi-account-circle"
                   :error-messages="userStore.nameError"
@@ -182,7 +183,7 @@ const clearData = () => {
               <v-col>
                 <v-text-field
                   label="เบอร์โทรศัพท์"
-                  variant="solo"
+                  variant="outlined"
                   rounded
                   prepend-icon="mdi-phone"
                   :error-messages="userStore.telError"
@@ -195,14 +196,14 @@ const clearData = () => {
               label="อีเมล"
               required
               rounded
-              variant="solo"
+              variant="outlined"
               prepend-icon="mdi-email"
               :error-messages="userStore.emailError"
               v-model="userStore.email"
             ></v-text-field>
             <v-text-field
               label="รหัสผ่าน"
-              variant="solo"
+              variant="outlined"
               required
               rounded
               prepend-icon="mdi-lock"
@@ -217,16 +218,30 @@ const clearData = () => {
               </template>
             </v-text-field>
             <v-card-actions>
-              <v-btn @click="returnToLogin()" color="primary">ย้อนกลับ</v-btn>
+              <v-btn
+                variant="flat"
+                size="large"
+                rounded
+                @click="returnToLogin()"
+                color="#D3F1DF"
+                >ย้อนกลับ</v-btn
+              >
               <v-spacer></v-spacer>
-              <v-btn @click="saveUser()" color="success">ยืนยัน</v-btn>
+              <v-btn
+                variant="flat"
+                size="large"
+                rounded
+                @click="saveUser()"
+                color="#A888B5"
+                >ยืนยัน</v-btn
+              >
             </v-card-actions>
           </v-card-text>
         </v-card>
       </v-col>
       <v-row class="flex-column justify-center align-center">
         <v-img
-          src="/public/welcome-back.png"
+          src="/public/welcome.png"
           height="150"
           width="150"
           contain
@@ -240,11 +255,10 @@ const clearData = () => {
 </template>
 
 <style>
-.v-text-field .v-input__append {
+.register-page .v-text-field .v-input__append {
   position: absolute;
-  right: 5%;
   transform: translateY(70%);
-  margin-right: 10px;
+  left: 85%;
 }
 .register-page .welcome-back-animation {
   animation: bounce 2s infinite ease-in-out;

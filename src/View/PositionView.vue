@@ -16,9 +16,12 @@ const clear = () => {
   router.push("/userManagement");
 };
 
-
 const savePosition = () => {
-  if(positionStore.namePosition === "" && departmentStore.nameDepartment === "" && positionStore.description === ""){
+  if (
+    positionStore.namePosition === "" &&
+    departmentStore.nameDepartment === "" &&
+    positionStore.description === ""
+  ) {
     Swal.fire({
       icon: "error",
       title: "กรุณากรอกข้อมูลให้ครบถ้วน",
@@ -49,7 +52,7 @@ const savePosition = () => {
   <HeaderView />
   <v-container>
     <SubHeaderView style="position: absolute; top: 0; left: 0; z-index: 1" />
-    <v-card align="center" justify="center" style="overflow-y: auto">
+    <v-card class="glass-card" align="center" justify="center" style="overflow-y: auto">
       <v-card-text>
         <v-row>
           <v-col>
@@ -87,9 +90,23 @@ const savePosition = () => {
             <v-row>
               <v-col>
                 <v-card-actions>
-                  <v-btn color="error" @click="clear()">กลับ</v-btn>
+                  <v-btn
+                    variant="flat"
+                    size="large"
+                    rounded
+                    color="error"
+                    @click="clear()"
+                    >กลับ</v-btn
+                  >
                   <v-spacer></v-spacer>
-                  <v-btn color="primary" @click="savePosition()">ยืนยัน</v-btn>
+                  <v-btn
+                    variant="flat"
+                    size="large"
+                    rounded
+                    color="primary"
+                    @click="savePosition()"
+                    >ยืนยัน</v-btn
+                  >
                 </v-card-actions>
               </v-col>
             </v-row>
@@ -99,3 +116,15 @@ const savePosition = () => {
     </v-card>
   </v-container>
 </template>
+
+<style scoped>
+.glass-card {
+  background: rgba(255, 255, 255, 0.2); /* ตั้งค่าความโปร่งแสงของพื้นหลัง */
+  backdrop-filter: blur(10px); /* ใช้ฟิลเตอร์ทำให้พื้นหลังมัว */
+  border-radius: 15px; /* กำหนดขอบเรียบร้อย */
+  border: 1px solid rgba(255, 255, 255, 0.3); /* ขอบโปร่งแสง */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* เงาสำหรับเพิ่มมิติ */
+  padding: 20px; /* ระยะห่างภายใน */
+  color: #fff; /* สีตัวอักษร */
+}
+</style>

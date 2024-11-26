@@ -204,7 +204,8 @@ onMounted(() => {
           <v-col col="6"
             ><v-text-field
               label="รหัสบัตรประชาชน"
-              variant="solo"
+              variant="outlined"
+              rounded
               prepend-icon="mdi-card-account-details"
               :error-messages="userStore.thaiIdError"
               v-model="userStore.currentUser!.thaiId"
@@ -213,7 +214,8 @@ onMounted(() => {
           <v-col col="6"
             ><v-text-field
               label="ชื่อ-นามสกุล"
-              variant="solo"
+              variant="outlined"
+              rounded
               prepend-icon="mdi-account-circle"
               :error-messages="userStore.nameError"
               v-model="userStore.currentUser!.name"
@@ -224,7 +226,8 @@ onMounted(() => {
           <v-col col="6"
             ><v-text-field
               label="เบอร์โรศัพท์"
-              variant="solo"
+              variant="outlined"
+              rounded
               prepend-icon="mdi-phone"
               :error-messages="userStore.telError"
               v-model="userStore.currentUser!.tel"
@@ -233,7 +236,8 @@ onMounted(() => {
           <v-col col="6"
             ><v-text-field
               label="อีเมล"
-              variant="solo"
+              variant="outlined"
+              rounded
               prepend-icon="mdi-email"
               :error-messages="userStore.emailError"
               v-model="userStore.currentUser!.email"
@@ -246,7 +250,8 @@ onMounted(() => {
               label="ตำแหน่ง"
               prepend-icon="mdi-briefcase"
               :items="positionStore.positions.map((p) => p.name)"
-              variant="solo"
+              variant="outlined"
+              rounded
               v-if="userStore.currentUser!.positionId === null"
               v-model="namePosition"
               @change="() => (selectedLeader = '')"
@@ -255,7 +260,8 @@ onMounted(() => {
               label="ตำแหน่ง"
               prepend-icon="mdi-briefcase"
               :items="positionStore.positions.map((p) => p.name)"
-              variant="solo"
+              variant="outlined"
+              rounded
               v-model="userStore.currentUser!.position!.name"
               v-if="userStore.currentUser && userStore.currentUser.position"
               @change="() => (selectedLeader = '')"
@@ -266,7 +272,8 @@ onMounted(() => {
               label="แผนก"
               prepend-icon="mdi-account-group"
               :items="departmentStore.departments.map((d) => d.name)"
-              variant="solo"
+              variant="outlined"
+              rounded
               v-if="userStore.currentUser!.positionId === null"
               v-model="nameDepartment"
             ></v-select>
@@ -274,7 +281,8 @@ onMounted(() => {
               label="แผนก"
               prepend-icon="mdi-account-group"
               :items="departmentStore.departments.map((d) => d.name)"
-              variant="solo"
+              variant="outlined"
+              rounded
               v-model="userStore.currentUser!.department!.name"
               v-if="userStore.currentUser && userStore.currentUser.department"
               @change="() => (selectedLeader = '')"
@@ -285,9 +293,10 @@ onMounted(() => {
               userStore.currentUser!.department === null
             "
               label="แผนก"
+              rounded
               prepend-icon="mdi-account-group"
               :items="departmentStore.departments.map((d) => d.name)"
-              variant="solo"
+              variant="outlined"
               v-model="nameDepartment"
               @change="() => (selectedLeader = '')"
             ></v-select>
@@ -299,9 +308,10 @@ onMounted(() => {
               label="เลือกหัวหน้า"
               prepend-icon="mdi-account-tie"
               :items="departmentLeaders"
+              rounded
               v-model="selectedLeader"
               :no-data-text="'ไม่เจอผู้ใช้ในแผนกนี้'"
-              variant="solo"
+              variant="outlined"
             ></v-select>
           </v-col>
         </v-row>
