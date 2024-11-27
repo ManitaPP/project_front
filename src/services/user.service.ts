@@ -4,6 +4,10 @@ import http from "./axios";
 function getUser() {
     return http.get("/users");
   }
+
+  function getAllUser() {
+    return http.get("/users/findAll");
+  }
   function getOneUser(id: number) {
     return http.get(`/users/${id}`);
   }
@@ -23,6 +27,10 @@ function getUser() {
   
   function createUser(User: User) {
     return http.post("/users/", User);
+  }
+
+  function reUser(id:number) {
+    return http.post(`/users/${id}/restore`);
   }
   
   function getUserByEmail(email: string) {
@@ -56,7 +64,9 @@ function getUser() {
     getOneUser,
     updateLeader,
     getOneByName,
-    searchUsers
+    searchUsers,
+    reUser,
+    getAllUser
   };
   
 

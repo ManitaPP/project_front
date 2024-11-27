@@ -14,4 +14,7 @@ export interface User {
     department?: Department| null;
     positionId?: number | null;
     departmentId?: number | null;
+    createdAt?: Date | null;
+    updatedAt?: Date | null;
+    deletedAt?: Date | null;
 }

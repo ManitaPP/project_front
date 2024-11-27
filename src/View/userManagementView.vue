@@ -12,6 +12,8 @@ const selectedRole = ref("user");
 const selectedDepartment = ref("ไม่เลือกแผนก");
 const selectedPosition = ref("ไม่เลือกตำแหน่ง");
 const search = ref("");
+const currentPage = ref(1);
+const itemsPerPage = 5;
 
 const departmentOptions = computed(() => {
   const uniqueDepartments = new Set(
@@ -35,6 +37,13 @@ const positionOptions = computed(() => {
 
   return ["ไม่เลือกตำแหน่ง", "ไม่สามารถระบุได้", ...Array.from(uniquePositions)];
 });
+
+const paginatedUsers = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage;
+  const end = start + itemsPerPage;
+  return filteredUsers.value.slice(start, end);
+});
+
 const filteredUsers = computed(() => {
   return userStore.users
     .filter((user) => {
@@ -52,22 +61,23 @@ const filteredUsers = computed(() => {
       return matchesRole && matchesDepartment && matchesPosition;
     })
     .sort((a, b) => {
-      if (a.departmentId === null && b.departmentId !== null) return -1;
-      if (a.departmentId !== null && b.departmentId === null) return 1;
+      if (a.deletedAt === null && b.deletedAt !== null) return -1; // a ไปก่อน b
+      if (a.deletedAt !== null && b.deletedAt === null) return 1; // b ไปก่อน a
       return 0;
     });
 });
 
 const searchData = () => {
   if (search.value.trim() === "") {
-    userStore.getUsers();
+    userStore.getAllUsers();
   } else {
+    currentPage.value = 1;
     userStore.searchUsers(search.value);
   }
 };
 
 onMounted(async () => {
-  await userStore.getUsers();
+  await userStore.getAllUsers();
 });
 
 const editUser = (user: User) => {
@@ -98,7 +108,28 @@ const deleteUser = async (idUser: number) => {
       });
     }
   });
-  await userStore.getUsers();
+  await userStore.getAllUsers();
+};
+const reUser = (id: number) => {
+  Swal.fire({
+    title: "ต้องการที่จะคืนสถานะผู้ใช้ใช่หรือไม่?",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "ยืนยัน",
+    cancelButtonText: "ยกเลิก",
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      userStore.reUser(id);
+      Swal.fire({
+        title: "คืนสถานะสำเร็จ!",
+        text: "ผู้ใช้สามารถกลับมาใช้งานได้แล้ว",
+        icon: "success",
+      });
+      await userStore.getAllUsers();
+    }
+  });
 };
 </script>
 
@@ -108,7 +139,10 @@ const deleteUser = async (idUser: number) => {
     <SubHeaderView style="position: absolute; top: 0; left: 0; z-index: 1" />
     <v-row>
       <v-col col="12">
-        <v-card class="glass-card" style="overflow-y: auto; max-height: 80vh">
+        <v-card
+          class="glass-card styled-scrollbar"
+          style="overflow-y: auto; max-height: 80vh"
+        >
           <v-card-title style="text-align: center"
             >ข้อมูลผู้ใช้ทั้งหมด
             <v-icon style="margin-left: 1%; margin-bottom: 1%">mdi-account-group</v-icon>
@@ -171,7 +205,7 @@ const deleteUser = async (idUser: number) => {
           <v-card-text>
             <v-table style="width: 100%" class="styled-table">
               <thead>
-                <tr style="background-color: #849fb6">
+                <tr style="background-color: #6a669d">
                   <th style="text-align: center" v-if="selectedRole === 'user'">แผนก</th>
                   <th style="text-align: center" v-if="selectedRole === 'user'">
                     ตำแหน่ง
@@ -184,14 +218,16 @@ const deleteUser = async (idUser: number) => {
                   </th>
                   <th style="text-align: center">ชื่อ-นามสกุล</th>
                   <th style="text-align: center">อีเมล</th>
+                  <th style="text-align: center">สถานะ</th>
                   <th style="text-align: center"></th>
                 </tr>
               </thead>
               <tbody
-                v-if="filteredUsers.length > 0"
-                v-for="(item, index) in filteredUsers"
+                v-if="paginatedUsers.length > 0"
+                v-for="(item, index) in paginatedUsers"
                 :key="index"
                 style="overflow-y: scroll"
+                class="hover-class"
               >
                 <tr>
                   <!-- <td style="text-align: center">{{ item.thaiId }}</td> -->
@@ -227,8 +263,21 @@ const deleteUser = async (idUser: number) => {
                   </td>
                   <td style="text-align: center">{{ item.name }}</td>
                   <td style="text-align: center">{{ item.email }}</td>
-                  <!-- <td style="text-align: center">{{ item.tel }}</td> -->
-                  <td style="text-align: center">
+                  <td
+                    style="text-align: center; display: flex; align-items: center"
+                    v-if="item.deletedAt === null"
+                  >
+                    <v-img src="/public/round.png" width="10" height="10"></v-img>
+                    กำลังใช้งาน
+                  </td>
+                  <td
+                    style="text-align: center; display: flex; align-items: center"
+                    v-if="item.deletedAt !== null"
+                  >
+                    <v-img src="/public/roundRed.png" width="10" height="10"></v-img
+                    >ไม่ได้ใช้งาน
+                  </td>
+                  <td style="text-align: center" v-if="item.deletedAt === null">
                     <v-btn
                       style="margin: 5%"
                       rounded
@@ -243,6 +292,11 @@ const deleteUser = async (idUser: number) => {
                       <UserEditDialog />
                     </v-dialog>
                   </td>
+                  <td align="center" v-if="item.deletedAt !== null">
+                    <v-btn rounded color="#F0A4AC" @click="reUser(item.userId!)"
+                      ><v-icon>mdi-restore</v-icon></v-btn
+                    >
+                  </td>
                 </tr>
               </tbody>
               <tbody v-else>
@@ -251,28 +305,21 @@ const deleteUser = async (idUser: number) => {
                 </tr>
               </tbody>
             </v-table>
-            <!-- <v-pagination
+            <v-pagination
               v-model="currentPage"
-              :length="totalPages"
-              total-visible="4"
+              :length="Math.ceil(filteredUsers.length / itemsPerPage)"
+              total-visible="5"
               class="mt-4"
-            ></v-pagination> -->
+            ></v-pagination>
           </v-card-text>
         </v-card>
       </v-col>
     </v-row>
   </v-container>
 </template>
-
 <style scoped>
-.styled-table th,
-.styled-table td {
-  text-align: center;
-  border: 1px solid black; /* Add borders to table cells */
-}
-
-.styled-table {
-  width: 100%;
-  border-collapse: collapse; /* Ensures the borders between cells are merged */
+.hover-class:hover {
+  background-color: #b3c8cf;
+  cursor: pointer;
 }
 </style>

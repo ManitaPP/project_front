@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import HeaderView from "../components/header/headerView.vue";
 import SubHeaderView from "../components/header/subHeaderView.vue";
 import { useUserStore } from "../stores/user.store";
@@ -9,6 +9,21 @@ import viewDialog from "../components/dialog/viewDialog.vue";
 
 const userStore = useUserStore();
 const authStore = useAuthStore();
+const showDataAll = ref(true);
+const showData = ref(false);
+
+watch([showDataAll, showData], async ([newShowDataAll, newShowData]) => {
+  if (authStore.currentUser) {
+    if (newShowDataAll) {
+      await userStore.getPositionByLeader(authStore.currentUser.userId!);
+      data.value.children = userStore.users.map((user) => constructNode(user));
+    }
+    if (newShowData) {
+      await userStore.getUserByLeader(authStore.currentUser.userId!);
+      data.value.children = userStore.users.map((user) => constructNode(user));
+    }
+  }
+});
 
 interface Node {
   key: string;
@@ -44,11 +59,15 @@ function constructNode(user) {
 }
 
 onMounted(async () => {
-  if (authStore.currentUser) {
+  if (authStore.currentUser && showDataAll.value) {
     await userStore.getPositionByLeader(authStore.currentUser.userId!);
+    data.value.children = userStore.users.map((user) => constructNode(user));
+  } else if (authStore.currentUser && showData.value) {
+    await userStore.getUserByLeader(authStore.currentUser.userId!);
     data.value.children = userStore.users.map((user) => constructNode(user));
   }
 });
+
 const getNodeStyle = (node) => {
   switch (node) {
     case "หัวหน้าแผนก":
@@ -97,7 +116,7 @@ const showDialog = (data: any) => {
   <v-container>
     <SubHeaderView style="position: absolute; top: 0; left: 0; z-index: 1" />
     <v-card
-      class="glass-card"
+      class="glass-card styled-scrollbar"
       align="center"
       justify="center"
       style="overflow-y: auto; max-height: 80vh"
@@ -105,6 +124,32 @@ const showDialog = (data: any) => {
       <v-card-title style="text-align: center; font-weight: bold">
         แผนผังองค์กร
       </v-card-title>
+      <v-card-text>
+        <div class="custom-btn-group">
+          <v-btn
+            :color="showDataAll ? '#E8BCB9' : '#FFF4B7'"
+            @click="
+              () => {
+                showDataAll = true;
+                showData = false;
+              }
+            "
+          >
+            แสดงตำแหน่งทั้งหมด
+          </v-btn>
+          <v-btn
+            :color="showData ? '#E8BCB9' : '#FFF4B7'"
+            @click="
+              () => {
+                showData = true;
+                showDataAll = false;
+              }
+            "
+          >
+            แสดงตำแหน่ง 1 ระดับ
+          </v-btn>
+        </div>
+      </v-card-text>
       <OrganizationChart :value="data" collapsible>
         <template #person="slotProps">
           <div
@@ -126,12 +171,24 @@ const showDialog = (data: any) => {
 </template>
 <style scoped>
 .glass-card {
-  background: rgba(255, 255, 255, 0.2); /* ตั้งค่าความโปร่งแสงของพื้นหลัง */
-  backdrop-filter: blur(10px); /* ใช้ฟิลเตอร์ทำให้พื้นหลังมัว */
-  border-radius: 15px; /* กำหนดขอบเรียบร้อย */
-  border: 1px solid rgba(255, 255, 255, 0.3); /* ขอบโปร่งแสง */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* เงาสำหรับเพิ่มมิติ */
-  padding: 20px; /* ระยะห่างภายใน */
-  color: #fff; /* สีตัวอักษร */
+  background: rgba(255, 255, 255, 0.2);
+  /* ตั้งค่าความโปร่งแสงของพื้นหลัง */
+  backdrop-filter: blur(10px);
+  /* ใช้ฟิลเตอร์ทำให้พื้นหลังมัว */
+  border-radius: 15px;
+  /* กำหนดขอบเรียบร้อย */
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  /* ขอบโปร่งแสง */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  /* เงาสำหรับเพิ่มมิติ */
+  padding: 20px;
+  /* ระยะห่างภายใน */
+  color: #fff;
+  /* สีตัวอักษร */
+}
+.custom-btn-group {
+  display: flex;
+  justify-content: center;
+  gap: 8px; /* กำหนดระยะห่างระหว่างปุ่ม */
 }
 </style>

@@ -32,6 +32,15 @@ export const useUserStore = defineStore("useUserStore", () => {
         }
       };
 
+      const getAllUsers = async () => {
+        try {
+          const res = await userService.getAllUser();
+          users.value = res.data;
+        } catch (e) {
+          console.error("Failed to fetch users:", e);
+        }
+      };
+
       const createUser = async (user:User) => {
         try {
           const res = await userService.createUser(user);
@@ -62,7 +71,7 @@ export const useUserStore = defineStore("useUserStore", () => {
         try {
           const res = await userService.deleteUser(id);
           currentUser.value = res.data;
-          getUsers();
+          getAllUsers();
         } catch (e) {
           console.error("Failed to fetch users:", e);
         }
@@ -134,8 +143,18 @@ export const useUserStore = defineStore("useUserStore", () => {
           console.error("Failed to fetch users:", e);
         }
       };
+      const reUser = async (id:number) => {
+        try {
+          const res = await userService.reUser(id);
+          currentUser.value = res.data;
+          getAllUsers();
+        } catch (e) {
+          console.error("Failed to fetch users:", e);
+        }
+      };
+
 
       return { getUsers, createUser, deleteUser, updateUser, users, currentUser,showDialog ,name, email, password, thaiId, getUserByRole, thaiIdError,nameError,passwordError,emailError, tel,telError, getUserByLeader,getPositionByLeader, getOneById,updateLeader,
-        getOneByName,existingThaiIds,searchUsers
+        getOneByName,existingThaiIds,searchUsers,reUser,getAllUsers
        };
 })

@@ -197,14 +197,25 @@ onMounted(() => {
 </script>
 <template>
   <v-container align="center" justify="center">
-    <v-card style="width: 70%">
-      <v-card-title style="text-align: center">แก้ไขข้อมูลผู้ใช้</v-card-title>
-      <v-card-text>
+    <v-card class="styled-scrollbar" style="width: 70%; border-radius: 5%">
+      <v-card-title style="text-align: center; background-color: #6a669d"
+        >แก้ไขข้อมูลผู้ใช้</v-card-title
+      >
+      <v-divider></v-divider>
+      <v-card-text class="styled-scrollbar" style="overflow-y: auto; max-height: 80vh">
+        <v-img
+          align="center"
+          src="/public/profile.png"
+          style="margin-bottom: 2%"
+          width="100"
+          height="100"
+        ></v-img>
         <v-row>
           <v-col col="6"
             ><v-text-field
               label="รหัสบัตรประชาชน"
               variant="outlined"
+              disabled
               rounded
               prepend-icon="mdi-card-account-details"
               :error-messages="userStore.thaiIdError"
@@ -315,6 +326,7 @@ onMounted(() => {
             ></v-select>
           </v-col>
         </v-row>
+        <v-divider></v-divider>
         <v-card-actions>
           <v-btn color="error" @click="cancel()">ยกเลิก</v-btn>
           <v-spacer></v-spacer>

@@ -11,4 +11,25 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.3);
   color: #fff;
 }
+.styled-scrollbar::-webkit-scrollbar {
+  width: 8px; /* ความกว้างของ Scrollbar */
+  height: 8px; /* ความสูงของ Scrollbar */
+}
+
+/* ปรับแต่ง Track */
+.styled-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1); /* สีพื้นหลังของ Track */
+  border-radius: 10px; /* ทำให้ Track มน */
+}
+
+/* ปรับแต่ง Thumb */
+.styled-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.4); /* สีของ Thumb */
+  border-radius: 10px; /* ทำให้ Thumb มน */
+  border: 2px solid rgba(0, 0, 0, 0.2); 
+}
+
+.styled-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.6); 
+}
 }  

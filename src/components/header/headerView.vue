@@ -12,7 +12,10 @@ const themeIcon = computed(() =>
 );
 </script>
 <template>
-  <v-app-bar :elevation="2">
+  <v-app-bar
+    :elevation="2"
+    style="background: linear-gradient(to right, #424769, #6a669d)"
+  >
     <!-- <template v-slot:prepend> </template> -->
     <!-- <v-img src="/public//application.png" style="height: 70%" class="align-left"></v-img> -->
     <v-app-bar-title style="font-weight: bold">CDG </v-app-bar-title>

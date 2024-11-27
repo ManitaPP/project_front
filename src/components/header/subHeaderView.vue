@@ -12,6 +12,7 @@ const authStore = useAuthStore();
         rail
         permanent
         class="fill-height d-flex flex-column"
+        style="background: linear-gradient(to top, #424769, #6a669d)"
       >
         <v-list>
           <v-list-item
