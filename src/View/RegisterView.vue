@@ -93,9 +93,11 @@ const clearData = () => {
   userStore.emailError = "";
   userStore.passwordError = "";
   userStore.thaiIdError = "";
+  userStore.telError = "";
   userStore.name = "";
   userStore.email = "";
   userStore.password = "";
+  userStore.tel = "";
   userStore.thaiId = "";
 };
 
@@ -143,10 +145,7 @@ const saveUser = () => {
   };
   console.log(user);
   authStore.registerUser(user);
-  userStore.thaiId = "";
-  userStore.email = "";
-  userStore.password = "";
-  userStore.name = "";
+  clearData();
   router.push("/login");
 };
 </script>

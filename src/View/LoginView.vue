@@ -2,8 +2,10 @@
 import { ref } from "vue";
 import { useAuthStore } from "../stores/auth.store";
 import router from "../router";
+import { useUserStore } from "../stores/user.store";
 
 const password = ref("");
+const userStore = useUserStore();
 const email = ref("");
 const authStore = useAuthStore();
 const showPassword = ref(false);
@@ -18,7 +20,21 @@ function summit() {
 }
 function goToRegister() {
   router.push("/register");
+  clearData();
 }
+
+const clearData = () => {
+  userStore.nameError = "";
+  userStore.emailError = "";
+  userStore.passwordError = "";
+  userStore.thaiIdError = "";
+  userStore.telError = "";
+  userStore.name = "";
+  userStore.email = "";
+  userStore.password = "";
+  userStore.tel = "";
+  userStore.thaiId = "";
+};
 </script>
 
 <template>

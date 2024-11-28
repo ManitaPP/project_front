@@ -34,7 +34,10 @@ onMounted(async () => {
         <v-row style="text-align: left">
           <v-col>ตำแหน่ง: {{ userStore.currentUser?.position?.name }} </v-col>
         </v-row>
-        <v-row style="text-align: left">
+        <v-row
+          style="text-align: left"
+          v-if="userStore.currentUser?.position?.name !== 'CEO'"
+        >
           <v-col>แผนก: {{ userStore.currentUser?.department?.name }} </v-col>
         </v-row>
       </v-card-text>

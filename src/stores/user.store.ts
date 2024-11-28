@@ -152,9 +152,17 @@ export const useUserStore = defineStore("useUserStore", () => {
           console.error("Failed to fetch users:", e);
         }
       };
+      const getLeaderByPriority = async (id:number) => {
+        try {
+          const res = await userService.getLeaderByPriority(id);
+          users.value = res.data;
+        } catch (e) {
+          console.error("Failed to fetch users:", e);
+        }
+      };
 
 
       return { getUsers, createUser, deleteUser, updateUser, users, currentUser,showDialog ,name, email, password, thaiId, getUserByRole, thaiIdError,nameError,passwordError,emailError, tel,telError, getUserByLeader,getPositionByLeader, getOneById,updateLeader,
-        getOneByName,existingThaiIds,searchUsers,reUser,getAllUsers
+        getOneByName,existingThaiIds,searchUsers,reUser,getAllUsers,getLeaderByPriority
        };
 })

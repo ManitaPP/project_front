@@ -25,11 +25,10 @@ const authStore = useAuthStore();
         <v-list dense nav class="flex-grow-1">
           <v-list-item
             prepend-icon="mdi-home"
-            title="หน้าหลัก"
-            value="หน้าหลัก"
+            title="แผนผังองค์กร"
+            value="แผนผังองค์กร"
             link
-            v-if="authStore.currentUser?.role === 'user'"
-            to="/main"
+            to="/diagram"
           ></v-list-item>
           <v-list-item
             prepend-icon="mdi-account-tie"

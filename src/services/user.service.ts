@@ -52,6 +52,10 @@ function getUser() {
     return http.patch(`/users/updateLeader/${leaderId}`);
   }
 
+  function getLeaderByPriority(id: number) {
+    return http.get(`/users/priority/${id}`);
+  }
+
   export default {
     getUser,
     deleteUser,
@@ -66,7 +70,8 @@ function getUser() {
     getOneByName,
     searchUsers,
     reUser,
-    getAllUser
+    getAllUser,
+    getLeaderByPriority
   };
   
 

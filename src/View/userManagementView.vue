@@ -61,8 +61,14 @@ const filteredUsers = computed(() => {
       return matchesRole && matchesDepartment && matchesPosition;
     })
     .sort((a, b) => {
-      if (a.deletedAt === null && b.deletedAt !== null) return -1; // a ไปก่อน b
-      if (a.deletedAt !== null && b.deletedAt === null) return 1; // b ไปก่อน a
+      if (a.position?.name === "CEO" && b.position?.name !== "CEO") return -1;
+      if (a.position?.name !== "CEO" && b.position?.name === "CEO") return 1;
+      if (a.deletedAt === null && b.deletedAt !== null) return -1;
+      if (a.deletedAt !== null && b.deletedAt === null) return 1;
+      if (a.department?.name === b.department?.name) {
+        return (a.position?.priority ?? Infinity) - (b.position?.priority ?? Infinity);
+      }
+
       return 0;
     });
 });
