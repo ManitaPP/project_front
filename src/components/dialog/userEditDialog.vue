@@ -34,10 +34,10 @@ const departmentLeaders = computed(() => {
     return (
       user.role === "user" &&
       user.userId !== currentUserId &&
-      user.positionId !== currentUserPositionId &&
+      user.positionId! < currentUserPositionId! && // Only include users with positionId less than the current user
       user.departmentId === currentUserDepartmentId &&
       user.departmentId != null &&
-      !isCurrentUsersSubordinate // Exclude if current user is their leader
+      !isCurrentUsersSubordinate
     );
   });
 

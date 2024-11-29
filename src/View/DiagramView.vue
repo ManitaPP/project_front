@@ -1,16 +1,18 @@
 <script setup lang="ts">
-import { ref, onMounted, watch, provide } from "vue";
+import { ref, onMounted, watch, provide, computed } from "vue";
 import { useUserStore } from "../stores/user.store";
 import { useAuthStore } from "../stores/auth.store";
 import HeaderView from "../components/header/headerView.vue";
 import SubHeaderView from "../components/header/subHeaderView.vue";
 import RecursiveNode from "../components/RecursiveNode.vue";
 import ViewDialog from "../components/dialog/viewDialog.vue";
+import { console } from "inspector";
 
 const userStore = useUserStore();
 const authStore = useAuthStore();
 const showDataAll = ref(true);
 const showData = ref(false);
+const show = ref(false);
 const selectedNode = ref<TreeNode | null>(null);
 
 const onNodeClick = (node: TreeNode) => {
@@ -50,12 +52,6 @@ interface TreeNode {
   children: TreeNode[];
 }
 
-const filterAndSortUsers = (users: any[]) => {
-  const noLeaderUsers = users.filter((user) => user.leaderId === null);
-  const otherUsers = users.filter((user) => user.leaderId !== null);
-  return [...noLeaderUsers, ...otherUsers];
-};
-
 const data = ref<{ children: TreeNode[] }>({ children: [] });
 
 const constructNode = (user: any) => {
@@ -85,11 +81,15 @@ onMounted(async () => {
     await userStore.getLeaderByPriority(1);
     data.value.children = userStore.users.map((user) => constructNode(user));
   }
+  await userStore.getUsersLeaderAllNull();
 });
 const showDataInDialog = (name: string) => {
   userStore.showDialog = true;
   userStore.name = name;
 };
+const usersWithoutLeader = computed(() => {
+  return userStore.userLeaderNull.filter((user) => user.leaderId === null);
+});
 </script>
 
 <template>
@@ -101,6 +101,39 @@ const showDataInDialog = (name: string) => {
         <v-card class="styled-scrollbar" style="overflow-y: auto; max-height: 80vh">
           <div class="tree-container">
             <h1 style="text-align: center">แผนผังองค์กร</h1>
+            <v-card-title>
+              <v-card v-if="authStore.currentUser?.role === 'admin'">
+                <v-card-title class="d-flex justify-space-between align-center">
+                  User ที่ยังไม่มีหัวหน้า
+                  <v-card-actions class="ma-0 pa-0">
+                    <v-btn
+                      :icon="show ? 'mdi-chevron-up' : 'mdi-chevron-down'"
+                      @click="show = !show"
+                    >
+                      <v-icon>{{ show ? "mdi-chevron-up" : "mdi-chevron-down" }}</v-icon>
+                    </v-btn>
+                  </v-card-actions>
+                </v-card-title>
+                <v-expand-transition>
+                  <div v-show="show">
+                    <v-divider></v-divider>
+                    <v-card-text>
+                      <div
+                        class="node root"
+                        v-for="user in usersWithoutLeader"
+                        :key="user.userId"
+                      >
+                        <div class="content" @click="showDataInDialog(user.name)">
+                          <h3>{{ user.position?.name }}</h3>
+                          <p>{{ user.department?.name }}</p>
+                          <p>{{ user.name }}</p>
+                        </div>
+                      </div>
+                    </v-card-text>
+                  </div>
+                </v-expand-transition>
+              </v-card>
+            </v-card-title>
             <v-card-text v-if="authStore.currentUser?.role === 'user'">
               <div class="custom-btn-group">
                 <v-btn

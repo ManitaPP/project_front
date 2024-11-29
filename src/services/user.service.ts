@@ -56,6 +56,10 @@ function getUser() {
     return http.get(`/users/priority/${id}`);
   }
 
+  function getLeaderNull() {
+    return http.get("/users/findAllNullLeader");
+  }
+
   export default {
     getUser,
     deleteUser,
@@ -71,7 +75,8 @@ function getUser() {
     searchUsers,
     reUser,
     getAllUser,
-    getLeaderByPriority
+    getLeaderByPriority,
+    getLeaderNull
   };
   
 

@@ -7,6 +7,7 @@ import Swal from 'sweetalert2';
 
 export const useUserStore = defineStore("useUserStore", () => {
     const users = ref<User[]>([]);
+    const userLeaderNull = ref<User[]>([]);
     const existingThaiIds = ref<string[]>([]);
     const currentUser= ref<User>();
     const showDialog = ref(false);
@@ -161,8 +162,18 @@ export const useUserStore = defineStore("useUserStore", () => {
         }
       };
 
+      
+    const getUsersLeaderAllNull = async () => {
+      try {
+        const res = await userService.getLeaderNull();
+        userLeaderNull.value = res.data;
+      } catch (e) {
+        console.error("Failed to fetch users:", e);
+      }
+    };
+
 
       return { getUsers, createUser, deleteUser, updateUser, users, currentUser,showDialog ,name, email, password, thaiId, getUserByRole, thaiIdError,nameError,passwordError,emailError, tel,telError, getUserByLeader,getPositionByLeader, getOneById,updateLeader,
-        getOneByName,existingThaiIds,searchUsers,reUser,getAllUsers,getLeaderByPriority
+        getOneByName,existingThaiIds,searchUsers,reUser,getAllUsers,getLeaderByPriority, getUsersLeaderAllNull,userLeaderNull
        };
 })
