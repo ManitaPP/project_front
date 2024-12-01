@@ -39,6 +39,14 @@ const authStore = useAuthStore();
           ></v-list-item>
           <v-list-item
             v-if="authStore.currentUser?.role === 'admin'"
+            prepend-icon="mdi-upload"
+            title="อัปโหลดรูปภาพ"
+            value="อัปโหลดรูปภาพ"
+            link
+            to="/capImage"
+          ></v-list-item>
+          <v-list-item
+            v-if="authStore.currentUser?.role === 'admin'"
             prepend-icon="mdi-monitor-edit"
             title="จัดการข้อมูลผู้ใช้งาน"
             value="จัดการข้อมูลผู้ใช้งาน"

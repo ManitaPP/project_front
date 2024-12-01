@@ -37,7 +37,7 @@ const savePosition = () => {
   const department = {
     name: departmentStore.nameDepartment,
   };
-  positionStore.createPosition(position);
+  // positionStore.createPosition(position);
   departmentStore.createDepartment(department);
   Swal.fire({
     icon: "success",

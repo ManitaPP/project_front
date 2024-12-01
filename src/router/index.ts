@@ -8,6 +8,7 @@ import { useAuthStore } from "../stores/auth.store";
 import ForbiddenView from "../View/ForbiddenView.vue";
 import PositionView from "../View/PositionView.vue";
 import DiagramView from "../View/DiagramView.vue";
+import CapImageView from "../View/CapImageView.vue";
 
 const routes = [
   {
@@ -55,6 +56,11 @@ const routes = [
     path: '/diagram',
     name: 'diagram',
     component: DiagramView,
+  },
+  {
+    path: '/capImage',
+    name: 'capImage',
+    component: CapImageView,
   },
 ];
 
