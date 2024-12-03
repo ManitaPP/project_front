@@ -17,6 +17,49 @@ onMounted(async () => {
   await loadModels();
 });
 
+const rotateAndDetectFaces = async (canvas) => {
+  let angle = 0;
+  let hasDetected = false;
+
+  while (angle < 360 && !hasDetected) {
+    const detections = await faceapi
+      .detectSingleFace(canvas, new faceapi.TinyFaceDetectorOptions())
+      .withFaceLandmarks();
+    if (detections) {
+      console.log("Face detected at angle:", angle);
+      processedImage.value = canvas.toDataURL();
+      hasDetected = true;
+    } else {
+      console.log("No face detected, rotating canvas...");
+      canvas = rotateCanvas(canvas, 90);
+      angle += 90;
+    }
+  }
+
+  if (!hasDetected) {
+    console.log("No face detected after full rotation.");
+  }
+};
+
+const rotateCanvas = (originalCanvas, degrees) => {
+  const rotatedCanvas = document.createElement("canvas");
+  const ctx = rotatedCanvas.getContext("2d");
+
+  if (degrees === 90 || degrees === 270) {
+    rotatedCanvas.width = originalCanvas.height;
+    rotatedCanvas.height = originalCanvas.width;
+  } else {
+    rotatedCanvas.width = originalCanvas.width;
+    rotatedCanvas.height = originalCanvas.height;
+  }
+
+  ctx!.translate(rotatedCanvas.width / 2, rotatedCanvas.height / 2);
+  ctx!.rotate((degrees * Math.PI) / 180);
+  ctx!.drawImage(originalCanvas, -originalCanvas.width / 2, -originalCanvas.height / 2);
+
+  return rotatedCanvas;
+};
+
 const isBlueBackground = (image: HTMLImageElement): boolean => {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d")!;
@@ -157,6 +200,7 @@ const applyShadowDetection = async (image: HTMLImageElement) => {
 
     cv.imshow(croppedCanvas, rotated);
     processedImage.value = croppedCanvas.toDataURL();
+    await rotateAndDetectFaces(croppedCanvas);
   }
 
   // Clean up memory
