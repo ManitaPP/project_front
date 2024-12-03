@@ -1,12 +1,49 @@
 <script lang="ts" setup>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useUserStore } from "../../stores/user.store";
+import * as faceapi from "face-api.js";
 
 const file = ref<File | null>(null);
 const processedImage = ref<string | null>(null);
 const originalFile = ref<string | null>(null);
 const originalImage = ref<HTMLImageElement | null>(null);
 const userStore = useUserStore();
+
+const loadModels = async () => {
+  await faceapi.nets.tinyFaceDetector.loadFromUri("/models");
+  await faceapi.nets.faceLandmark68Net.loadFromUri("/models");
+};
+onMounted(async () => {
+  await loadModels();
+});
+
+const isBlueBackground = (image: HTMLImageElement): boolean => {
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d")!;
+  canvas.width = image.width;
+  canvas.height = image.height;
+
+  ctx.drawImage(image, 0, 0, image.width, image.height);
+
+  const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  const data = imgData.data;
+
+  let bluePixels = 0;
+  const totalPixels = imgData.width * imgData.height;
+
+  for (let i = 0; i < data.length; i += 4) {
+    const r = data[i];
+    const g = data[i + 1];
+    const b = data[i + 2];
+
+    if (b > 150 && b > r && b > g) {
+      bluePixels++;
+    }
+  }
+
+  const bluePercentage = (bluePixels / totalPixels) * 100;
+  return bluePercentage > 40;
+};
 
 const processImage = async () => {
   if (!file.value) {
@@ -16,51 +53,54 @@ const processImage = async () => {
 
   const reader = new FileReader();
   reader.onload = (e: any) => {
-    // โหลดไฟล์เป็น URL
-    originalFile.value = e.target.result; // นำไฟล์ URL มาเก็บไว้
+    originalFile.value = e.target.result;
     const image = new Image();
     image.src = e.target.result;
-    image.onload = () => {
-      originalImage.value = image;
-      applyEdgeDetection(image); // แปลงเป็น URL แล้วนำมาเข้า function เพื่อประมวลผล
+    image.onload = async () => {
+      if (isBlueBackground(image)) {
+        processedImage.value = originalFile.value;
+      } else {
+        applyShadowDetection(image);
+      }
     };
   };
   reader.readAsDataURL(file.value);
 };
 
-// ฟังก์ชันสำหรับการตรวจจับขอบ
-const applyEdgeDetection = (image: HTMLImageElement) => {
+const applyShadowDetection = async (image: HTMLImageElement) => {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d")!;
   canvas.width = image.width;
   canvas.height = image.height;
-
   ctx.drawImage(image, 0, 0, image.width, image.height);
 
-  const src = cv.imread(canvas); // อ่านภาพจาก canvas
+  const src = cv.imread(canvas);
   const gray = new cv.Mat();
-  const edges = new cv.Mat();
+  const thresh = new cv.Mat();
 
-  // แปลงภาพเป็น grayscale
+  // Convert to Grayscale
   cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY, 0);
 
-  // ใช้ Canny edge detection
-  cv.Canny(gray, edges, 50, 150);
+  // Apply Adaptive Thresholding
+  cv.adaptiveThreshold(
+    gray,
+    thresh,
+    255,
+    cv.ADAPTIVE_THRESH_MEAN_C,
+    cv.THRESH_BINARY_INV,
+    15,
+    10
+  );
 
-  // ทำ morphological closing เพื่อลบช่องว่างหรือขอบที่ไม่สมบูรณ์
-  const kernel = cv.Mat.ones(5, 5, cv.CV_8U); // ขนาดของ kernel (ปรับได้ตามต้องการ)
-  cv.morphologyEx(edges, edges, cv.MORPH_CLOSE, kernel);
-
+  // Find Contours of Shadow Areas
   const contours = new cv.MatVector();
   const hierarchy = new cv.Mat();
-  cv.findContours(edges, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
+  cv.findContours(thresh, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
 
-  // หา bounding box รอบๆ ขอบที่ใหญ่ที่สุด
+  // Crop Largest Shadow Area
   if (contours.size() > 0) {
     let largestArea = 0;
     let largestIndex = -1;
-
-    // หาพื้นที่ของแต่ละ contour
     for (let i = 0; i < contours.size(); i++) {
       const area = cv.contourArea(contours.get(i));
       if (area > largestArea) {
@@ -69,18 +109,8 @@ const applyEdgeDetection = (image: HTMLImageElement) => {
       }
     }
 
-    // วาด bounding box รอบๆ ขอบที่ใหญ่ที่สุด
     const boundingRect = cv.boundingRect(contours.get(largestIndex));
-    ctx.strokeStyle = "red";
-    ctx.lineWidth = 2;
-    ctx.strokeRect(
-      boundingRect.x,
-      boundingRect.y,
-      boundingRect.width,
-      boundingRect.height
-    );
-
-    // ครอปภาพจาก bounding box
+    const padding = 10; // เพิ่มขอบรอบภาพ
     const croppedCanvas = document.createElement("canvas");
     const croppedCtx = croppedCanvas.getContext("2d")!;
     croppedCanvas.width = boundingRect.width;
@@ -96,15 +126,43 @@ const applyEdgeDetection = (image: HTMLImageElement) => {
       boundingRect.width,
       boundingRect.height
     );
+    const croppedImage = cv.imread(croppedCanvas);
+    const rotatedRect = cv.minAreaRect(contours.get(largestIndex));
 
-    // เก็บภาพที่ประมวลผลแล้วในรูปแบบ base64
+    let angle = rotatedRect.angle;
+
+    if (rotatedRect.size.width < rotatedRect.size.height) {
+      angle += 90;
+    }
+    console.log(`Object tilt angle: ${angle.toFixed(2)} degrees`);
+    const center = new cv.Point(croppedImage.cols / 2, croppedImage.rows / 2);
+    let rotateAngle = 0;
+    if (angle === 0 || angle === 90 || angle === 180 || angle === 270) {
+      rotateAngle = 0;
+      console.log("Rotating: ", rotateAngle);
+    } else {
+      rotateAngle = angle - 90;
+      console.log("Rotating image by: ", rotateAngle);
+    }
+    console.log("มุมที่ต้องหมุน: ", rotateAngle);
+
+    const rotationMatrix = cv.getRotationMatrix2D(center, rotateAngle, 1);
+    const rotated = new cv.Mat();
+    cv.warpAffine(
+      croppedImage,
+      rotated,
+      rotationMatrix,
+      new cv.Size(croppedImage.cols, croppedImage.rows)
+    );
+
+    cv.imshow(croppedCanvas, rotated);
     processedImage.value = croppedCanvas.toDataURL();
   }
 
-  // ล้าง memory ของ OpenCV
+  // Clean up memory
   src.delete();
   gray.delete();
-  edges.delete();
+  thresh.delete();
   contours.delete();
   hierarchy.delete();
 };
@@ -139,7 +197,7 @@ const cancel = () => {
           </v-col>
           <v-col cols="12" sm="6">
             <div v-if="processedImage">
-              <h4>ผลลัพธ์:</h4>
+              <h4 style="margin-bottom: 5%">ผลลัพธ์:</h4>
               <img :src="processedImage" style="max-width: 100%" />
             </div>
           </v-col>
