@@ -22,6 +22,7 @@ export const useUserStore = defineStore("useUserStore", () => {
     const emailError = ref('');
     const passwordError = ref('');
     const thaiIdError = ref('');
+    const loading = ref(false);
 
     const getUsers = async () => {
         try {
@@ -174,6 +175,6 @@ export const useUserStore = defineStore("useUserStore", () => {
 
 
       return { getUsers, createUser, deleteUser, updateUser, users, currentUser,showDialog ,name, email, password, thaiId, getUserByRole, thaiIdError,nameError,passwordError,emailError, tel,telError, getUserByLeader,getPositionByLeader, getOneById,updateLeader,
-        getOneByName,existingThaiIds,searchUsers,reUser,getAllUsers,getLeaderByPriority, getUsersLeaderAllNull,userLeaderNull
+        getOneByName,existingThaiIds,searchUsers,reUser,getAllUsers,getLeaderByPriority, getUsersLeaderAllNull,userLeaderNull,loading
        };
 })

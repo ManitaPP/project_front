@@ -20,7 +20,7 @@ onMounted(async () => {
 const rotateAndDetectFaces = async (canvas) => {
   let angle = 0;
   let hasDetected = false;
-
+  userStore.loading = true;
   while (angle < 360 && !hasDetected) {
     const detections = await faceapi
       .detectSingleFace(canvas, new faceapi.TinyFaceDetectorOptions())
@@ -202,6 +202,7 @@ const applyShadowDetection = async (image: HTMLImageElement) => {
     processedImage.value = croppedCanvas.toDataURL();
     await rotateAndDetectFaces(croppedCanvas);
   }
+  userStore.loading = false;
 
   // Clean up memory
   src.delete();
@@ -222,7 +223,21 @@ const cancel = () => {
 
 <template>
   <v-container align="center" justify="center">
-    <v-card class="styled-scrollbar" style="overflow-y: auto; max-height: 80vh">
+    <v-card
+      class="styled-scrollbar"
+      style="overflow-y: auto; max-height: 80vh; position: relative"
+    >
+      <div
+        v-if="userStore.loading"
+        class="text-center"
+        style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%)"
+      >
+        <v-progress-circular
+          :size="50"
+          color="primary"
+          indeterminate
+        ></v-progress-circular>
+      </div>
       <v-card-title>อัปโหลดรูปภาพ</v-card-title>
       <v-card-text>
         <v-file-input
@@ -253,3 +268,9 @@ const cancel = () => {
     </v-card>
   </v-container>
 </template>
+
+<style scoped>
+.v-progress-circular {
+  margin: 1rem;
+}
+</style>
