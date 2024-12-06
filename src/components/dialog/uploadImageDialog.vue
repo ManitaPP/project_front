@@ -20,17 +20,14 @@ onMounted(async () => {
 const rotateAndDetectFaces = async (canvas) => {
   let angle = 0;
   let hasDetected = false;
-  userStore.loading = true;
   while (angle < 360 && !hasDetected) {
     const detections = await faceapi
       .detectSingleFace(canvas, new faceapi.TinyFaceDetectorOptions())
       .withFaceLandmarks();
     if (detections) {
-      console.log("Face detected at angle:", angle);
       processedImage.value = canvas.toDataURL();
       hasDetected = true;
     } else {
-      console.log("No face detected, rotating canvas...");
       canvas = rotateCanvas(canvas, 90);
       angle += 90;
     }
@@ -111,6 +108,7 @@ const processImage = async () => {
 };
 
 const applyShadowDetection = async (image: HTMLImageElement) => {
+  userStore.loading = true;
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d")!;
   canvas.width = image.width;
@@ -177,17 +175,13 @@ const applyShadowDetection = async (image: HTMLImageElement) => {
     if (rotatedRect.size.width < rotatedRect.size.height) {
       angle += 90;
     }
-    console.log(`Object tilt angle: ${angle.toFixed(2)} degrees`);
     const center = new cv.Point(croppedImage.cols / 2, croppedImage.rows / 2);
     let rotateAngle = 0;
     if (angle === 0 || angle === 90 || angle === 180 || angle === 270) {
       rotateAngle = 0;
-      console.log("Rotating: ", rotateAngle);
     } else {
       rotateAngle = angle - 90;
-      console.log("Rotating image by: ", rotateAngle);
     }
-    console.log("มุมที่ต้องหมุน: ", rotateAngle);
 
     const rotationMatrix = cv.getRotationMatrix2D(center, rotateAngle, 1);
     const rotated = new cv.Mat();

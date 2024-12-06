@@ -130,6 +130,9 @@ const usersWithoutLeader = computed(() => {
                         </div>
                       </div>
                     </v-card-text>
+                    <v-card-text v-if="usersWithoutLeader.length === 0">
+                      <h3 style="text-align: center; color: red">ไม่มีข้อมูล User</h3>
+                    </v-card-text>
                   </div>
                 </v-expand-transition>
               </v-card>

@@ -8,6 +8,7 @@ export const usePositionStore = defineStore("usePositionStore", () => {
     const currentPosition = ref<Position>();
     const namePosition = ref('');
     const description = ref('');
+    const priority = ref(1);
 
     const getPositions = async () => {
         try {
@@ -22,10 +23,11 @@ export const usePositionStore = defineStore("usePositionStore", () => {
        try {
             const res = await positionService.createPosition(position);
             currentPosition.value = res.data;
+            console.log("Position created:", currentPosition.value);
        }
          catch (e) {
                 console.error("Failed to fetch positions:", e);
          }
     }
-      return { getPositions, createPosition, positions, currentPosition, namePosition, description };
+      return { getPositions, createPosition, positions, currentPosition, namePosition, description,priority };
 })

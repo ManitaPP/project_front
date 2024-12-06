@@ -12,6 +12,12 @@ const nameDepartment = ref("");
 const namePosition = ref("");
 let selectedLeader = ref("");
 
+const sortedPositions = computed(() => {
+  const positions = positionStore.positions
+    .slice()
+    .sort((a, b) => a.priority - b.priority);
+  return positions.map((p) => p.name);
+});
 const showLeaderSelect = computed(() => {
   if (userStore.currentUser!.positionId === null) {
     return namePosition.value !== "CEO" && namePosition.value !== "";
@@ -260,7 +266,7 @@ onMounted(() => {
             <v-select
               label="ตำแหน่ง"
               prepend-icon="mdi-briefcase"
-              :items="positionStore.positions.map((p) => p.name)"
+              :items="sortedPositions"
               variant="outlined"
               rounded
               v-if="userStore.currentUser!.positionId === null"
@@ -270,7 +276,7 @@ onMounted(() => {
             <v-select
               label="ตำแหน่ง"
               prepend-icon="mdi-briefcase"
-              :items="positionStore.positions.map((p) => p.name)"
+              :items="sortedPositions"
               variant="outlined"
               rounded
               v-model="userStore.currentUser!.position!.name"
