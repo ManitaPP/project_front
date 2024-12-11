@@ -195,7 +195,7 @@ const applyShadowDetection = async (image: HTMLImageElement) => {
     );
 
     cv.imshow(croppedCanvas, rotated);
-    processedImage.value = croppedCanvas.toDataURL();
+    // processedImage.value = croppedCanvas.toDataURL();
     await rotateAndDetectFaces(croppedCanvas);
     userStore.loading = false;
   }

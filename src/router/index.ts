@@ -9,6 +9,7 @@ import ForbiddenView from "../View/ForbiddenView.vue";
 import PositionView from "../View/PositionView.vue";
 import DiagramView from "../View/DiagramView.vue";
 import CapImageView from "../View/CapImageView.vue";
+import CapSignatureView from "../View/CapSignatureView.vue";
 
 const routes = [
   {
@@ -61,6 +62,11 @@ const routes = [
     path: '/capImage',
     name: 'capImage',
     component: CapImageView,
+  },
+  {
+    path: '/capSignature',
+    name: 'capSignature',
+    component: CapSignatureView,
   },
 ];
 

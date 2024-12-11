@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import Swal from "sweetalert2";
 import { useUserStore } from "../../stores/user.store";
 import { computed, nextTick, onMounted, ref, watch } from "vue";
 import { useDepartmentStore } from "../../stores/department.store";
