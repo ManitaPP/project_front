@@ -7,84 +7,18 @@ import * as faceapi from "face-api.js";
 
 const file = ref<File | null>(null);
 const processedImage = ref<string | null>(null);
+const processedImage1 = ref<string | null>(null);
 const originalFile = ref<string | null>(null);
 const originalImage = ref<HTMLImageElement | null>(null);
 const userStore = useUserStore();
 
-const loadModels = async () => {
-  await faceapi.nets.tinyFaceDetector.loadFromUri("/models");
-  await faceapi.nets.faceLandmark68Net.loadFromUri("/models");
-};
 onMounted(async () => {
   await loadModels();
 });
 
-const rotateAndDetectFaces = async (canvas) => {
-  let angle = 0;
-  let hasDetected = false;
-  while (angle < 360 && !hasDetected) {
-    const detections = await faceapi
-      .detectSingleFace(canvas, new faceapi.TinyFaceDetectorOptions())
-      .withFaceLandmarks();
-    if (detections) {
-      processedImage.value = canvas.toDataURL();
-      hasDetected = true;
-    } else {
-      canvas = rotateCanvas(canvas, 90);
-      angle += 90;
-    }
-  }
-
-  if (!hasDetected) {
-    console.log("No face detected after full rotation.");
-  }
-};
-
-const rotateCanvas = (originalCanvas, degrees) => {
-  const rotatedCanvas = document.createElement("canvas");
-  const ctx = rotatedCanvas.getContext("2d");
-
-  if (degrees === 90 || degrees === 270) {
-    rotatedCanvas.width = originalCanvas.height;
-    rotatedCanvas.height = originalCanvas.width;
-  } else {
-    rotatedCanvas.width = originalCanvas.width;
-    rotatedCanvas.height = originalCanvas.height;
-  }
-
-  ctx!.translate(rotatedCanvas.width / 2, rotatedCanvas.height / 2);
-  ctx!.rotate((degrees * Math.PI) / 180);
-  ctx!.drawImage(originalCanvas, -originalCanvas.width / 2, -originalCanvas.height / 2);
-
-  return rotatedCanvas;
-};
-
-const isBlueBackground = (image: HTMLImageElement): boolean => {
-  const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d")!;
-  canvas.width = image.width;
-  canvas.height = image.height;
-
-  ctx.drawImage(image, 0, 0, image.width, image.height);
-
-  const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  const data = imgData.data;
-
-  let bluePixels = 0;
-  const totalPixels = imgData.width * imgData.height;
-
-  for (let i = 0; i < data.length; i += 4) {
-    const r = data[i];
-    const g = data[i + 1];
-    const b = data[i + 2];
-
-    if (b > 150 && b > r && b > g) {
-      bluePixels++;
-    }
-  }
-
-  const bluePercentage = (bluePixels / totalPixels) * 100;
-  return bluePercentage > 40;
+const loadModels = async () => {
+  await faceapi.nets.tinyFaceDetector.loadFromUri("/models");
+  await faceapi.nets.faceLandmark68Net.loadFromUri("/models");
 };
 
 const processImage = async () => {
@@ -99,113 +33,198 @@ const processImage = async () => {
     const image = new Image();
     image.src = e.target.result;
     image.onload = async () => {
-      if (isBlueBackground(image)) {
-        processedImage.value = originalFile.value;
-      } else {
-        userStore.loading = true;
-        applyShadowDetection(image);
-      }
+      applyShadowDetection(image);
     };
   };
   reader.readAsDataURL(file.value);
 };
 
 const applyShadowDetection = async (image: HTMLImageElement) => {
+  userStore.loading = true;
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d")!;
   canvas.width = image.width;
   canvas.height = image.height;
   ctx.drawImage(image, 0, 0, image.width, image.height);
-
   const src = cv.imread(canvas);
-  const gray = new cv.Mat();
-  const thresh = new cv.Mat();
 
-  // Convert to Grayscale
+  const gray = new cv.Mat();
   cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY, 0);
 
-  // Apply Adaptive Thresholding
-  cv.adaptiveThreshold(
-    gray,
-    thresh,
-    255,
-    cv.ADAPTIVE_THRESH_MEAN_C,
-    cv.THRESH_BINARY_INV,
-    15,
-    10
-  );
+  const blurred = new cv.Mat();
+  cv.GaussianBlur(gray, blurred, new cv.Size(5, 5), 0);
 
-  // Find Contours of Shadow Areas
-  const contours = new cv.MatVector();
-  const hierarchy = new cv.Mat();
-  cv.findContours(thresh, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
+  const edges = new cv.Mat();
+  cv.Canny(blurred, edges, 50, 150);
 
-  // Crop Largest Shadow Area
-  if (contours.size() > 0) {
-    let largestArea = 0;
-    let largestIndex = -1;
-    for (let i = 0; i < contours.size(); i++) {
-      const area = cv.contourArea(contours.get(i));
-      if (area > largestArea) {
-        largestArea = area;
-        largestIndex = i;
-      }
-    }
+  const lines = new cv.Mat();
+  cv.HoughLines(edges, lines, 1, Math.PI / 180, 100);
 
-    const boundingRect = cv.boundingRect(contours.get(largestIndex));
-    const padding = 10; // เพิ่มขอบรอบภาพ
-    const croppedCanvas = document.createElement("canvas");
-    const croppedCtx = croppedCanvas.getContext("2d")!;
-    croppedCanvas.width = boundingRect.width;
-    croppedCanvas.height = boundingRect.height;
-    croppedCtx.drawImage(
-      image,
-      boundingRect.x,
-      boundingRect.y,
-      boundingRect.width,
-      boundingRect.height,
-      0,
-      0,
-      boundingRect.width,
-      boundingRect.height
-    );
-    const croppedImage = cv.imread(croppedCanvas);
-    const rotatedRect = cv.minAreaRect(contours.get(largestIndex));
+  const angles: number[] = [];
+  for (let i = 0; i < lines.rows; i++) {
+    const rho = lines.data32F[i * 2];
+    const theta = lines.data32F[i * 2 + 1];
+    const angle = (theta * 180) / Math.PI;
+    angles.push(angle);
 
-    let angle = rotatedRect.angle;
+    const a = Math.cos(theta);
+    const b = Math.sin(theta);
+    const x0 = a * rho;
+    const y0 = b * rho;
+    const lineLength = 2000;
+    const x1 = Math.round(x0 + lineLength * -b);
+    const y1 = Math.round(y0 + lineLength * a);
+    const x2 = Math.round(x0 - lineLength * -b);
+    const y2 = Math.round(y0 - lineLength * a);
 
-    if (rotatedRect.size.width < rotatedRect.size.height) {
-      angle += 90;
-    }
-    const center = new cv.Point(croppedImage.cols / 2, croppedImage.rows / 2);
-    let rotateAngle = 0;
-    if (angle === 0 || angle === 90 || angle === 180 || angle === 270) {
-      rotateAngle = 0;
-    } else {
-      rotateAngle = angle - 90;
-    }
-
-    const rotationMatrix = cv.getRotationMatrix2D(center, rotateAngle, 1);
-    const rotated = new cv.Mat();
-    cv.warpAffine(
-      croppedImage,
-      rotated,
-      rotationMatrix,
-      new cv.Size(croppedImage.cols, croppedImage.rows)
-    );
-
-    cv.imshow(croppedCanvas, rotated);
-    // processedImage.value = croppedCanvas.toDataURL();
-    await rotateAndDetectFaces(croppedCanvas);
-    userStore.loading = false;
+    // cv.line(src, new cv.Point(x1, y1), new cv.Point(x2, y2), [255, 0, 0, 255], 2);
   }
+  const mostFrequentAngle = calculateMostFrequentAngle(angles);
+  console.log("Most Frequent Angle:", mostFrequentAngle);
+  const rotated = rotateImage(src, mostFrequentAngle);
 
-  // Clean up memory
+  processedImage.value = detectEdgesAgain(rotated);
   src.delete();
   gray.delete();
-  thresh.delete();
+  edges.delete();
+  lines.delete();
+
+  userStore.loading = false;
+};
+
+const calculateMostFrequentAngle = (angles: number[]): number => {
+  const histogram: Record<number, number> = {};
+
+  angles.forEach((angle) => {
+    const roundedAngle = Math.round(angle);
+    histogram[roundedAngle] = (histogram[roundedAngle] || 0) + 1;
+  });
+  let maxCount = 0;
+  let mostFrequentAngle = 0;
+  for (const [angle, count] of Object.entries(histogram)) {
+    if (count > maxCount) {
+      maxCount = count;
+      mostFrequentAngle = Number(angle);
+    }
+  }
+
+  return mostFrequentAngle;
+};
+
+const rotateImage = (src: cv.Mat, angle: number): cv.Mat => {
+  const center = new cv.Point(src.cols / 2, src.rows / 2);
+  const rotationMatrix = cv.getRotationMatrix2D(center, angle, 1.0);
+
+  const absCos = Math.abs(rotationMatrix.doubleAt(0, 0));
+  const absSin = Math.abs(rotationMatrix.doubleAt(0, 1));
+  const newWidth = Math.round(src.rows * absSin + src.cols * absCos);
+  const newHeight = Math.round(src.rows * absCos + src.cols * absSin);
+
+  rotationMatrix.doublePtr(0, 2)[0] += newWidth / 2 - center.x;
+  rotationMatrix.doublePtr(1, 2)[0] += newHeight / 2 - center.y;
+
+  const rotated = new cv.Mat();
+  cv.warpAffine(
+    src,
+    rotated,
+    rotationMatrix,
+    new cv.Size(newWidth, newHeight),
+    cv.INTER_LINEAR,
+    cv.BORDER_CONSTANT,
+    new cv.Scalar(255, 255, 255, 255)
+  );
+
+  return rotated;
+};
+
+const detectEdgesAgain = (rotated: cv.Mat): string => {
+  const gray = new cv.Mat();
+  const blurred = new cv.Mat();
+  const edges = new cv.Mat();
+
+  // แปลงภาพเป็น Grayscale
+  cv.cvtColor(rotated, gray, cv.COLOR_RGBA2GRAY, 0);
+
+  // ลด Noise ด้วย GaussianBlur
+  cv.GaussianBlur(gray, blurred, new cv.Size(5, 5), 0);
+
+  // ตรวจจับขอบด้วย Canny Edge Detection
+  cv.Canny(blurred, edges, 50, 150);
+
+  // หา Contours
+  const contours = new cv.MatVector();
+  const hierarchy = new cv.Mat();
+  cv.findContours(edges, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
+
+  let largestArea = 0;
+  let largestRect: cv.Rect | null = null;
+
+  // ค้นหา Contour ที่มีขนาดใหญ่ที่สุดที่เปอร์เซ็นต์ของสีเทาน้อยกว่า 70%
+  for (let i = 0; i < contours.size(); i++) {
+    const contour = contours.get(i);
+    const rect = cv.boundingRect(contour);
+
+    const area = rect.width * rect.height;
+
+    // คำนวณเปอร์เซ็นต์ของสีเทาใน Contour นี้
+    const grayPercentage = calculateGrayPercentage(rotated, rect);
+
+    // ถ้าเปอร์เซ็นต์ของสีเทาน้อยกว่า 70% และมีขนาดใหญ่ที่สุด
+    if (grayPercentage < 70 && area > largestArea) {
+      largestArea = area;
+      largestRect = rect;
+    }
+  }
+
+  let croppedImage: string | null = null;
+
+  // ถ้ามี Contour ที่มีขนาดใหญ่ที่สุดและมีเปอร์เซ็นต์สีเทาน้อยกว่า 70%
+  if (largestRect) {
+    const point1 = new cv.Point(largestRect.x, largestRect.y);
+    const point2 = new cv.Point(
+      (largestRect as cv.Rect).x + (largestRect as cv.Rect).width,
+      largestRect.y + largestRect.height
+    );
+    cv.rectangle(rotated, point1, point2, [255, 0, 0, 255], 2);
+
+    const cropped = rotated.roi(largestRect);
+
+    const canvasCropped = document.createElement("canvas");
+    cv.imshow(canvasCropped, cropped);
+    croppedImage = canvasCropped.toDataURL();
+
+    cropped.delete();
+  }
+
+  const canvas = document.createElement("canvas");
+  cv.imshow(canvas, rotated);
+
+  gray.delete();
+  blurred.delete();
+  edges.delete();
   contours.delete();
   hierarchy.delete();
+  return croppedImage || canvas.toDataURL();
+};
+
+const calculateGrayPercentage = (image: cv.Mat, rect: cv.Rect): number => {
+  const roi = image.roi(rect);
+
+  let grayPixelCount = 0;
+  let totalPixelCount = roi.cols * roi.rows;
+  for (let y = 0; y < roi.rows; y++) {
+    for (let x = 0; x < roi.cols; x++) {
+      const pixel = roi.ucharPtr(y, x);
+      if (Math.abs(pixel[0] - pixel[1]) < 10 && Math.abs(pixel[1] - pixel[2]) < 10) {
+        grayPixelCount++;
+      }
+    }
+  }
+
+  roi.delete();
+
+  const grayPercentage = (grayPixelCount / totalPixelCount) * 100;
+  return grayPercentage;
 };
 
 const cancel = () => {
@@ -223,7 +242,7 @@ const downloadImage = () => {
 
   const link = document.createElement("a");
   link.href = processedImage.value;
-  link.download = "processed-image.png";
+  link.download = "image.png";
   link.click();
 };
 </script>

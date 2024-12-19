@@ -7,6 +7,7 @@ import Tesseract from "tesseract.js";
 const file = ref<File | null>(null);
 const imageSrc = ref<string | null>(null);
 const ocrResult = ref<string>("");
+const croppedImages = ref<string[]>([]);
 
 const canvasRef = ref<HTMLCanvasElement | null>(null);
 
@@ -15,27 +16,13 @@ const handleFileChange = () => {
     const reader = new FileReader();
     reader.onload = (event) => {
       imageSrc.value = event.target?.result as string;
-      nextTick(() => drawImageOnCanvas());
+      nextTick(() => {
+        drawImageOnCanvas();
+        performOCR();
+      });
     };
     reader.readAsDataURL(file.value);
-
-    // Perform OCR after the file is read
-    performOCR(file.value);
   }
-};
-
-const performOCR = (file: File) => {
-  Tesseract.recognize(file, "eng+tha", {
-    logger: (info) => console.log(info), // Log OCR progress
-  })
-    .then(({ data: { text, words } }) => {
-      ocrResult.value = text; // Store the recognized text
-      nextTick(() => drawTextOnCanvas(words));
-    })
-    .catch((error) => {
-      console.error("OCR Error:", error);
-      ocrResult.value = "ไม่สามารถตรวจจับตัวอักษรได้";
-    });
 };
 
 const drawImageOnCanvas = () => {
@@ -51,22 +38,45 @@ const drawImageOnCanvas = () => {
   }
 };
 
-const drawTextOnCanvas = (words: any[]) => {
-  if (canvasRef.value && words) {
-    const ctx = canvasRef.value.getContext("2d");
-    ctx!.font = "16px Arial";
-    ctx!.fillStyle = "red";
-    words.forEach((word: any) => {
-      const { bbox, text } = word;
-      if (bbox) {
-        const { x0, y0, x1, y1 } = bbox;
-        ctx!.fillText(text, x0, y0 - 5); // Adjust position slightly
-        ctx!.strokeStyle = "red";
-        ctx!.lineWidth = 1;
-        ctx!.strokeRect(x0, y0, x1 - x0, y1 - y0); // Draw bounding box
-      }
+const cropToBoundingBox = (bbox: any, originalCanvas: HTMLCanvasElement) => {
+  const { x0, y0, x1, y1 } = bbox;
+
+  const croppedCanvas = document.createElement("canvas");
+  const width = x1 - x0;
+  const height = y1 - y0;
+  croppedCanvas.width = width;
+  croppedCanvas.height = height;
+
+  const ctx = croppedCanvas.getContext("2d");
+  if (!ctx) return null;
+
+  ctx.drawImage(originalCanvas, x0, y0, width, height, 0, 0, width, height);
+
+  return croppedCanvas.toDataURL();
+};
+
+const performOCR = () => {
+  if (!imageSrc.value || !canvasRef.value) return;
+
+  Tesseract.recognize(imageSrc.value, "eng+tha", {
+    logger: (info) => console.log(info),
+    tessedit_char_blacklist: "0123456789",
+    tessedit_enable_doc_dict: "0",
+    tessedit_pageseg_mode: "1",
+  })
+    .then(({ data: { text, words } }) => {
+      ocrResult.value = text;
+      nextTick(() => {
+        const redBoxes = words.filter((word: any) => word.confidence <= 80);
+        croppedImages.value = redBoxes
+          .map((word: any) => cropToBoundingBox(word.bbox, canvasRef.value!))
+          .filter(Boolean);
+      });
+    })
+    .catch((error) => {
+      console.error("OCR Error:", error);
+      ocrResult.value = "ไม่สามารถตรวจจับตัวอักษรได้";
     });
-  }
 };
 </script>
 
@@ -97,6 +107,16 @@ const drawTextOnCanvas = (words: any[]) => {
               ref="canvasRef"
               style="max-width: 100%; border: 1px solid #ccc"
             ></canvas>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <h3>ผลลัพธ์:</h3>
+            <v-row>
+              <v-col v-for="(image, index) in croppedImages" :key="index">
+                <img :src="image" style="border: 1px solid #000" />
+              </v-col>
+            </v-row>
           </v-col>
         </v-row>
       </v-card-text>
