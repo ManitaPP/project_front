@@ -84,6 +84,13 @@ const applyShadowDetection = async (image: HTMLImageElement) => {
   const rotated = rotateImage(src, mostFrequentAngle);
 
   processedImage.value = detectEdgesAgain(rotated);
+
+  const rotatedImage = new Image();
+  rotatedImage.src = processedImage.value!;
+  rotatedImage.onload = () => {
+    detectFaceOrientation(rotatedImage);
+  };
+
   src.delete();
   gray.delete();
   edges.delete();
@@ -165,8 +172,6 @@ const detectEdgesAgain = (rotated: cv.Mat): string => {
     const rect = cv.boundingRect(contour);
 
     const area = rect.width * rect.height;
-
-    // คำนวณเปอร์เซ็นต์ของสีเทาใน Contour นี้
     const grayPercentage = calculateGrayPercentage(rotated, rect);
 
     // ถ้าเปอร์เซ็นต์ของสีเทาน้อยกว่า 70% และมีขนาดใหญ่ที่สุด
@@ -185,7 +190,7 @@ const detectEdgesAgain = (rotated: cv.Mat): string => {
       (largestRect as cv.Rect).x + (largestRect as cv.Rect).width,
       largestRect.y + largestRect.height
     );
-    cv.rectangle(rotated, point1, point2, [255, 0, 0, 255], 2);
+    // cv.rectangle(rotated, point1, point2, [255, 0, 0, 255], 2);
 
     const cropped = rotated.roi(largestRect);
 
@@ -225,6 +230,79 @@ const calculateGrayPercentage = (image: cv.Mat, rect: cv.Rect): number => {
 
   const grayPercentage = (grayPixelCount / totalPixelCount) * 100;
   return grayPercentage;
+};
+
+const detectFaceOrientation = async (image: HTMLImageElement): Promise<boolean> => {
+  let rotationAttempts = 0;
+  let finalImage: HTMLImageElement | null = null;
+
+  while (rotationAttempts < 4) {
+    const detections = await faceapi
+      .detectAllFaces(image, new faceapi.TinyFaceDetectorOptions())
+      .withFaceLandmarks();
+
+    if (detections.length > 0) {
+      const landmarks = detections[0].landmarks;
+
+      const leftEye = landmarks.getLeftEye();
+      const rightEye = landmarks.getRightEye();
+      const mouth = landmarks.getMouth();
+
+      const eyeAngle = calculateEyeAngle(leftEye, rightEye);
+      const mouthAngle = calculateMouthAngle(mouth);
+
+      if (Math.abs(eyeAngle) < 15 && Math.abs(mouthAngle) < 15) {
+        console.log("ใบหน้าตรง");
+        finalImage = image;
+        break;
+      } else {
+        console.log("ตรวจพบใบหน้า แต่ไม่ตรง ต้องปรับมุมเพิ่มเติม");
+      }
+    } else {
+      console.log("ไม่พบใบหน้าในมุมปัจจุบัน");
+    }
+
+    console.log(`หมุนภาพ ${rotationAttempts * 90} องศา`);
+    image = rotateImageElement(image, 90);
+    rotationAttempts++;
+  }
+
+  if (finalImage) {
+    processedImage1.value = finalImage.src;
+    return true;
+  } else {
+    console.log("ไม่สามารถตรวจพบใบหน้าในทุกมุมที่หมุน");
+    return false;
+  }
+};
+
+const calculateEyeAngle = (leftEye: any, rightEye: any): number => {
+  const deltaX = rightEye[3].x - leftEye[0].x;
+  const deltaY = rightEye[3].y - leftEye[0].y;
+  const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
+  return angle;
+};
+
+const calculateMouthAngle = (mouth: any): number => {
+  const deltaX = mouth[6].x - mouth[0].x;
+  const deltaY = mouth[6].y - mouth[0].y;
+  const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
+  return angle;
+};
+
+const rotateImageElement = (image: HTMLImageElement, angle: number): HTMLImageElement => {
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d")!;
+  canvas.width = image.height;
+  canvas.height = image.width;
+
+  ctx.translate(canvas.width / 2, canvas.height / 2);
+  ctx.rotate((angle * Math.PI) / 180);
+  ctx.drawImage(image, -image.width / 2, -image.height / 2);
+
+  const rotatedImage = new Image();
+  rotatedImage.src = canvas.toDataURL();
+  return rotatedImage;
 };
 
 const cancel = () => {
@@ -276,7 +354,7 @@ const downloadImage = () => {
           accept="image/*"
           @change="processImage"
         ></v-file-input>
-        <v-row v-if="file || processedImage">
+        <v-row v-if="file || processedImage1">
           <v-col cols="12" sm="6">
             <div v-if="file" class="image-container styled-scrollbar">
               <h4>ต้นฉบับ:</h4>
@@ -288,11 +366,11 @@ const downloadImage = () => {
             </div>
           </v-col>
           <v-col cols="12" sm="6">
-            <div v-if="processedImage" class="image-container">
+            <div v-if="processedImage1" class="image-container">
               <h4>ผลลัพธ์:</h4>
-              <img :src="processedImage" alt="ผลลัพธ์" class="image-preview" />
+              <img :src="processedImage1" alt="ผลลัพธ์" class="image-preview" />
               <v-btn
-                v-if="processedImage"
+                v-if="processedImage1"
                 @click="downloadImage"
                 color="black"
                 variant="text"
