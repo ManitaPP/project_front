@@ -78,7 +78,6 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore();
   const userRole = authStore.currentUser?.role;
-  console.log("role",userRole);
 
   if (!userRole && to.meta.requiredRole) {
     next({ name: 'Login' });

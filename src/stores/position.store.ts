@@ -23,7 +23,6 @@ export const usePositionStore = defineStore("usePositionStore", () => {
        try {
             const res = await positionService.createPosition(position);
             currentPosition.value = res.data;
-            console.log("Position created:", currentPosition.value);
        }
          catch (e) {
                 console.error("Failed to fetch positions:", e);

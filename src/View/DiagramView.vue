@@ -6,7 +6,7 @@ import HeaderView from "../components/header/headerView.vue";
 import SubHeaderView from "../components/header/subHeaderView.vue";
 import RecursiveNode from "../components/RecursiveNode.vue";
 import ViewDialog from "../components/dialog/viewDialog.vue";
-import { console } from "inspector";
+import draggable from "vuedraggable";
 
 const userStore = useUserStore();
 const authStore = useAuthStore();

@@ -131,7 +131,6 @@ const saveUser = () => {
     tel: userStore.tel,
     role: "user",
   };
-  console.log(user);
   authStore.registerAdmin(user);
   userStore.thaiId = "";
   userStore.email = "";

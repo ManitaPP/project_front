@@ -143,7 +143,6 @@ const saveUser = () => {
     name: userStore.name,
     tel: userStore.tel,
   };
-  console.log(user);
   authStore.registerUser(user);
   clearData();
   router.push("/login");

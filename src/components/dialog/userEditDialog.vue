@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useUserStore } from "../../stores/user.store";
-import { computed, nextTick, onMounted, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useDepartmentStore } from "../../stores/department.store";
 import { usePositionStore } from "../../stores/position.store";
 
@@ -178,7 +178,6 @@ const editUser = async () => {
 
     if (userStore.currentUser.leaderId !== null) {
       //มี leaderId อยู่แล้ว
-      console.log("LeaderId");
       userStore.updateUser(userStore.currentUser?.userId!, userStore.currentUser);
       userStore.updateLeader(userStore.currentUser.userId!);
     } else {

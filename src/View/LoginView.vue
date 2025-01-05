@@ -13,7 +13,6 @@ const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value;
 };
 function summit() {
-  console.log("login", email.value, password.value);
   authStore.login(email.value, password.value);
   password.value = "";
   email.value = "";
@@ -94,16 +93,7 @@ const clearData = () => {
               </v-btn>
             </v-row>
           </v-card-text>
-          <!-- </v-card> -->
         </v-col>
-        <!-- <v-col class="fullscreen">
-          <v-img
-            src="/public/มิ้นมงคล.jpg"
-            height="400"
-            width="400"
-            class="animated-image"
-          ></v-img>
-        </v-col> -->
       </v-row>
     </v-card>
   </v-container>

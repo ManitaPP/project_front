@@ -71,14 +71,16 @@ const applyShadowDetection = async (image: HTMLImageElement) => {
     const b = Math.sin(theta);
     const x0 = a * rho;
     const y0 = b * rho;
-    const lineLength = 2000;
+
+    const lineLength = Math.sqrt(Math.pow(canvas.width, 2) + Math.pow(canvas.height, 2)); // ยาวสุดที่ขอบภาพ
+
     const x1 = Math.round(x0 + lineLength * -b);
     const y1 = Math.round(y0 + lineLength * a);
     const x2 = Math.round(x0 - lineLength * -b);
     const y2 = Math.round(y0 - lineLength * a);
-
     // cv.line(src, new cv.Point(x1, y1), new cv.Point(x2, y2), [255, 0, 0, 255], 2);
   }
+
   const mostFrequentAngle = calculateMostFrequentAngle(angles);
   console.log("Most Frequent Angle:", mostFrequentAngle);
   const rotated = rotateImage(src, mostFrequentAngle);
@@ -148,17 +150,9 @@ const detectEdgesAgain = (rotated: cv.Mat): string => {
   const gray = new cv.Mat();
   const blurred = new cv.Mat();
   const edges = new cv.Mat();
-
-  // แปลงภาพเป็น Grayscale
   cv.cvtColor(rotated, gray, cv.COLOR_RGBA2GRAY, 0);
-
-  // ลด Noise ด้วย GaussianBlur
   cv.GaussianBlur(gray, blurred, new cv.Size(5, 5), 0);
-
-  // ตรวจจับขอบด้วย Canny Edge Detection
   cv.Canny(blurred, edges, 50, 150);
-
-  // หา Contours
   const contours = new cv.MatVector();
   const hierarchy = new cv.Mat();
   cv.findContours(edges, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
@@ -182,15 +176,13 @@ const detectEdgesAgain = (rotated: cv.Mat): string => {
   }
 
   let croppedImage: string | null = null;
-
-  // ถ้ามี Contour ที่มีขนาดใหญ่ที่สุดและมีเปอร์เซ็นต์สีเทาน้อยกว่า 70%
   if (largestRect) {
     const point1 = new cv.Point(largestRect.x, largestRect.y);
     const point2 = new cv.Point(
       (largestRect as cv.Rect).x + (largestRect as cv.Rect).width,
       largestRect.y + largestRect.height
     );
-    // cv.rectangle(rotated, point1, point2, [255, 0, 0, 255], 2);
+    cv.rectangle(rotated, point1, point2, [255, 255, 255, 255], 5);
 
     const cropped = rotated.roi(largestRect);
 
@@ -308,20 +300,58 @@ const rotateImageElement = (image: HTMLImageElement, angle: number): HTMLImageEl
 const cancel = () => {
   file.value = null;
   processedImage.value = null;
+  processedImage1.value = null;
   originalFile.value = null;
   originalImage.value = null;
 };
 
-const downloadImage = () => {
-  if (!processedImage.value) {
+const downloadImage = async () => {
+  if (!processedImage1.value) {
     alert("ไม่มีผลลัพธ์ให้ดาวน์โหลด");
     return;
   }
 
-  const link = document.createElement("a");
-  link.href = processedImage.value;
-  link.download = "image.png";
-  link.click();
+  const originalImage = new Image();
+  originalImage.src = processedImage1.value;
+
+  originalImage.onload = async () => {
+    const targetWidth = 800;
+    const targetHeight = Math.floor(
+      (originalImage.height / originalImage.width) * targetWidth
+    );
+
+    const canvas = document.createElement("canvas");
+    canvas.width = targetWidth;
+    canvas.height = targetHeight;
+    const ctx = canvas.getContext("2d")!;
+    ctx.drawImage(originalImage, 0, 0, targetWidth, targetHeight);
+
+    let quality = 0.9;
+    let resizedBlob: Blob | null = null;
+
+    // บีบอัดภาพจนกว่าขนาดจะน้อยกว่า 512 KB
+    do {
+      resizedBlob = await new Promise<Blob | null>((resolve) => {
+        canvas.toBlob((blob) => resolve(blob), "image/jpeg", quality);
+      });
+      if (resizedBlob && resizedBlob.size > 512 * 1024) {
+        quality -= 0.05; // ลดคุณภาพลงทีละน้อย
+      } else {
+        break;
+      }
+    } while (resizedBlob && quality > 0.1); // หยุดเมื่อคุณภาพต่ำเกินไป
+
+    if (resizedBlob) {
+      const resizedImageUrl = URL.createObjectURL(resizedBlob);
+      const link = document.createElement("a");
+      link.href = resizedImageUrl;
+      link.download = "image.jpg";
+      link.click();
+      URL.revokeObjectURL(resizedImageUrl);
+    } else {
+      alert("ไม่สามารถบีบอัดภาพได้ในขนาดที่กำหนด");
+    }
+  };
 };
 </script>
 

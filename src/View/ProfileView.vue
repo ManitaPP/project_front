@@ -15,13 +15,6 @@ if (user.value) {
 onMounted(async () => {
   await userStore.getOneById(userStore.currentUser!.userId!);
 });
-// const cancel = async () => {
-//   await userStore.getOneById(userStore.currentUser!.userId!);
-//   userStore.nameError = "";
-//   userStore.emailError = "";
-//   userStore.telError = "";
-//   userStore.thaiIdError = "";
-// };
 
 const validateEmail = (email) => {
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -177,10 +170,6 @@ const editUser = async () => {
               </v-col>
             </v-row>
             <v-card-actions style="justify-content: center">
-              <!-- <v-btn variant="flat" size="large" rounded color="error" @click="cancel()"
-                >ยกเลิก</v-btn
-              >
-              <v-spacer></v-spacer> -->
               <v-btn
                 variant="flat"
                 size="large"
