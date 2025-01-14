@@ -4,6 +4,7 @@ import HeaderView from "../components/header/headerView.vue";
 import SubHeaderView from "../components/header/subHeaderView.vue";
 import { useUserStore } from "../stores/user.store";
 import * as faceapi from "face-api.js";
+import Swal from "sweetalert2";
 
 const file = ref<File | null>(null);
 const processedImage = ref<string | null>(null);
@@ -40,7 +41,6 @@ const processImage = async () => {
 };
 
 const applyShadowDetection = async (image: HTMLImageElement) => {
-  userStore.loading = true;
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d")!;
   canvas.width = image.width;
@@ -62,30 +62,14 @@ const applyShadowDetection = async (image: HTMLImageElement) => {
 
   const angles: number[] = [];
   for (let i = 0; i < lines.rows; i++) {
-    const rho = lines.data32F[i * 2];
     const theta = lines.data32F[i * 2 + 1];
     const angle = (theta * 180) / Math.PI;
     angles.push(angle);
-
-    const a = Math.cos(theta);
-    const b = Math.sin(theta);
-    const x0 = a * rho;
-    const y0 = b * rho;
-
-    const lineLength = Math.sqrt(Math.pow(canvas.width, 2) + Math.pow(canvas.height, 2)); // ยาวสุดที่ขอบภาพ
-
-    const x1 = Math.round(x0 + lineLength * -b);
-    const y1 = Math.round(y0 + lineLength * a);
-    const x2 = Math.round(x0 - lineLength * -b);
-    const y2 = Math.round(y0 - lineLength * a);
-    // cv.line(src, new cv.Point(x1, y1), new cv.Point(x2, y2), [255, 0, 0, 255], 2);
   }
-
+  userStore.loading = true;
   const mostFrequentAngle = calculateMostFrequentAngle(angles);
-  console.log("Most Frequent Angle:", mostFrequentAngle);
   const rotated = rotateImage(src, mostFrequentAngle);
-
-  processedImage.value = detectEdgesAgain(rotated);
+  processedImage.value = detectEdgesAgain(rotated, mostFrequentAngle);
 
   const rotatedImage = new Image();
   rotatedImage.src = processedImage.value!;
@@ -97,8 +81,6 @@ const applyShadowDetection = async (image: HTMLImageElement) => {
   gray.delete();
   edges.delete();
   lines.delete();
-
-  userStore.loading = false;
 };
 
 const calculateMostFrequentAngle = (angles: number[]): number => {
@@ -123,15 +105,12 @@ const calculateMostFrequentAngle = (angles: number[]): number => {
 const rotateImage = (src: cv.Mat, angle: number): cv.Mat => {
   const center = new cv.Point(src.cols / 2, src.rows / 2);
   const rotationMatrix = cv.getRotationMatrix2D(center, angle, 1.0);
-
   const absCos = Math.abs(rotationMatrix.doubleAt(0, 0));
   const absSin = Math.abs(rotationMatrix.doubleAt(0, 1));
   const newWidth = Math.round(src.rows * absSin + src.cols * absCos);
   const newHeight = Math.round(src.rows * absCos + src.cols * absSin);
-
   rotationMatrix.doublePtr(0, 2)[0] += newWidth / 2 - center.x;
   rotationMatrix.doublePtr(1, 2)[0] += newHeight / 2 - center.y;
-
   const rotated = new cv.Mat();
   cv.warpAffine(
     src,
@@ -146,96 +125,77 @@ const rotateImage = (src: cv.Mat, angle: number): cv.Mat => {
   return rotated;
 };
 
-const detectEdgesAgain = (rotated: cv.Mat): string => {
+const detectEdgesAgain = (rotated: cv.Mat, angle: number): string => {
   const gray = new cv.Mat();
   const blurred = new cv.Mat();
   const edges = new cv.Mat();
-  cv.cvtColor(rotated, gray, cv.COLOR_RGBA2GRAY, 0);
-  cv.GaussianBlur(gray, blurred, new cv.Size(5, 5), 0);
-  cv.Canny(blurred, edges, 50, 150);
   const contours = new cv.MatVector();
   const hierarchy = new cv.Mat();
-  cv.findContours(edges, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
 
-  let largestArea = 0;
-  let largestRect: cv.Rect | null = null;
+  try {
+    cv.cvtColor(rotated, gray, cv.COLOR_RGBA2GRAY, 0);
+    cv.GaussianBlur(gray, blurred, new cv.Size(5, 5), 0);
+    cv.Canny(blurred, edges, 50, 100);
 
-  // ค้นหา Contour ที่มีขนาดใหญ่ที่สุดที่เปอร์เซ็นต์ของสีเทาน้อยกว่า 70%
-  for (let i = 0; i < contours.size(); i++) {
-    const contour = contours.get(i);
-    const rect = cv.boundingRect(contour);
+    cv.findContours(edges, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
+    let largestArea = 0;
+    let largestRect: cv.Rect | null = null;
 
-    const area = rect.width * rect.height;
-    const grayPercentage = calculateGrayPercentage(rotated, rect);
+    for (let i = 0; i < contours.size(); i++) {
+      const contour = contours.get(i);
+      const rect = cv.boundingRect(contour);
+      const area = rect.width * rect.height;
 
-    // ถ้าเปอร์เซ็นต์ของสีเทาน้อยกว่า 70% และมีขนาดใหญ่ที่สุด
-    if (grayPercentage < 70 && area > largestArea) {
-      largestArea = area;
-      largestRect = rect;
-    }
-  }
+      const isNearEdge =
+        rect.x < 10 ||
+        rect.y < 10 ||
+        rect.x + rect.width > rotated.cols - 10 ||
+        rect.y + rect.height > rotated.rows - 10;
 
-  let croppedImage: string | null = null;
-  if (largestRect) {
-    const point1 = new cv.Point(largestRect.x, largestRect.y);
-    const point2 = new cv.Point(
-      (largestRect as cv.Rect).x + (largestRect as cv.Rect).width,
-      largestRect.y + largestRect.height
-    );
-    cv.rectangle(rotated, point1, point2, [255, 255, 255, 255], 5);
+      const aspectRatio = rect.width / rect.height;
+      const isAbnormalShape = aspectRatio < 0.1 || aspectRatio > 10;
 
-    const cropped = rotated.roi(largestRect);
-
-    const canvasCropped = document.createElement("canvas");
-    cv.imshow(canvasCropped, cropped);
-    croppedImage = canvasCropped.toDataURL();
-
-    cropped.delete();
-  }
-
-  const canvas = document.createElement("canvas");
-  cv.imshow(canvas, rotated);
-
-  gray.delete();
-  blurred.delete();
-  edges.delete();
-  contours.delete();
-  hierarchy.delete();
-  return croppedImage || canvas.toDataURL();
-};
-
-const calculateGrayPercentage = (image: cv.Mat, rect: cv.Rect): number => {
-  const roi = image.roi(rect);
-
-  let grayPixelCount = 0;
-  let totalPixelCount = roi.cols * roi.rows;
-  for (let y = 0; y < roi.rows; y++) {
-    for (let x = 0; x < roi.cols; x++) {
-      const pixel = roi.ucharPtr(y, x);
-      if (Math.abs(pixel[0] - pixel[1]) < 10 && Math.abs(pixel[1] - pixel[2]) < 10) {
-        grayPixelCount++;
+      if (!isNearEdge && !isAbnormalShape && area > largestArea) {
+        largestArea = area;
+        largestRect = rect;
       }
     }
+
+    if (largestRect) {
+      const point1 = new cv.Point(largestRect.x, largestRect.y);
+      const point2 = new cv.Point(
+        largestRect.x + largestRect.width,
+        largestRect.y + largestRect.height
+      );
+      cv.rectangle(rotated, point1, point2, [255, 255, 255, 255], 10);
+      const roi = rotated.roi(largestRect);
+      const canvas = document.createElement("canvas");
+      cv.imshow(canvas, roi);
+      roi.delete();
+      return canvas.toDataURL();
+    }
+
+    const canvas = document.createElement("canvas");
+    cv.imshow(canvas, rotated);
+    return canvas.toDataURL();
+  } finally {
+    gray.delete();
+    blurred.delete();
+    edges.delete();
+    contours.delete();
+    hierarchy.delete();
   }
-
-  roi.delete();
-
-  const grayPercentage = (grayPixelCount / totalPixelCount) * 100;
-  return grayPercentage;
 };
 
 const detectFaceOrientation = async (image: HTMLImageElement): Promise<boolean> => {
   let rotationAttempts = 0;
   let finalImage: HTMLImageElement | null = null;
-
   while (rotationAttempts < 4) {
     const detections = await faceapi
       .detectAllFaces(image, new faceapi.TinyFaceDetectorOptions())
       .withFaceLandmarks();
-
     if (detections.length > 0) {
       const landmarks = detections[0].landmarks;
-
       const leftEye = landmarks.getLeftEye();
       const rightEye = landmarks.getRightEye();
       const mouth = landmarks.getMouth();
@@ -244,26 +204,27 @@ const detectFaceOrientation = async (image: HTMLImageElement): Promise<boolean> 
       const mouthAngle = calculateMouthAngle(mouth);
 
       if (Math.abs(eyeAngle) < 15 && Math.abs(mouthAngle) < 15) {
-        console.log("ใบหน้าตรง");
         finalImage = image;
+        userStore.loading = false;
         break;
-      } else {
-        console.log("ตรวจพบใบหน้า แต่ไม่ตรง ต้องปรับมุมเพิ่มเติม");
       }
-    } else {
-      console.log("ไม่พบใบหน้าในมุมปัจจุบัน");
     }
-
-    console.log(`หมุนภาพ ${rotationAttempts * 90} องศา`);
     image = rotateImageElement(image, 90);
     rotationAttempts++;
   }
-
   if (finalImage) {
     processedImage1.value = finalImage.src;
     return true;
   } else {
-    console.log("ไม่สามารถตรวจพบใบหน้าในทุกมุมที่หมุน");
+    Swal.fire({
+      position: "center",
+      icon: "error",
+      title: "ไม่สามารถตรวจจับใบหน้าได้",
+      showConfirmButton: false,
+      timer: 1500,
+    });
+    userStore.loading = false;
+    cancel();
     return false;
   }
 };
@@ -287,7 +248,6 @@ const rotateImageElement = (image: HTMLImageElement, angle: number): HTMLImageEl
   const ctx = canvas.getContext("2d")!;
   canvas.width = image.height;
   canvas.height = image.width;
-
   ctx.translate(canvas.width / 2, canvas.height / 2);
   ctx.rotate((angle * Math.PI) / 180);
   ctx.drawImage(image, -image.width / 2, -image.height / 2);
@@ -307,7 +267,13 @@ const cancel = () => {
 
 const downloadImage = async () => {
   if (!processedImage1.value) {
-    alert("ไม่มีผลลัพธ์ให้ดาวน์โหลด");
+    Swal.fire({
+      position: "center",
+      icon: "error",
+      title: "ไม่สามารถดาวน์โหลดไฟล์ได้",
+      showConfirmButton: false,
+      timer: 1500,
+    });
     return;
   }
 
@@ -328,18 +294,16 @@ const downloadImage = async () => {
 
     let quality = 0.9;
     let resizedBlob: Blob | null = null;
-
-    // บีบอัดภาพจนกว่าขนาดจะน้อยกว่า 512 KB
     do {
       resizedBlob = await new Promise<Blob | null>((resolve) => {
         canvas.toBlob((blob) => resolve(blob), "image/jpeg", quality);
       });
       if (resizedBlob && resizedBlob.size > 512 * 1024) {
-        quality -= 0.05; // ลดคุณภาพลงทีละน้อย
+        quality -= 0.05;
       } else {
         break;
       }
-    } while (resizedBlob && quality > 0.1); // หยุดเมื่อคุณภาพต่ำเกินไป
+    } while (resizedBlob && quality > 0.1);
 
     if (resizedBlob) {
       const resizedImageUrl = URL.createObjectURL(resizedBlob);
@@ -349,7 +313,13 @@ const downloadImage = async () => {
       link.click();
       URL.revokeObjectURL(resizedImageUrl);
     } else {
-      alert("ไม่สามารถบีบอัดภาพได้ในขนาดที่กำหนด");
+      Swal.fire({
+        position: "center",
+        icon: "error",
+        title: "ไม่สามารถดาวน์โหลดไฟล์ได้",
+        showConfirmButton: false,
+        timer: 1500,
+      });
     }
   };
 };
@@ -359,10 +329,7 @@ const downloadImage = async () => {
   <HeaderView />
   <v-container align="center" justify="center">
     <SubHeaderView style="position: absolute; top: 0; left: 0; z-index: 1" />
-    <v-card
-      class="styled-scrollbar"
-      style="overflow-y: auto; max-height: 80vh; position: relative"
-    >
+    <v-card>
       <div
         v-if="userStore.loading"
         class="text-center"

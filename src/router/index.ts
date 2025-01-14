@@ -10,6 +10,10 @@ import PositionView from "../View/PositionView.vue";
 import DiagramView from "../View/DiagramView.vue";
 import CapImageView from "../View/CapImageView.vue";
 import CapSignatureView from "../View/CapSignatureView.vue";
+import RequestView from "../View/request/RequestView.vue";
+import GeneralRequestView from "../View/request/GeneralRequestView.vue";
+import HistoryRequestView from "../View/request/HistoryRequestView.vue";
+
 
 const routes = [
   {
@@ -67,6 +71,21 @@ const routes = [
     path: '/capSignature',
     name: 'capSignature',
     component: CapSignatureView,
+  },
+  {
+    path: '/request',
+    name: 'request',
+    component: RequestView,
+  },
+  {
+    path: '/generalRequest',
+    name: 'generalRequest',
+    component: GeneralRequestView,
+  },
+  {
+    path: '/hisRequest',
+    name: 'hisRequest',
+    component: HistoryRequestView,
   },
 ];
 

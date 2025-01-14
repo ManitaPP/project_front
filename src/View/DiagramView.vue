@@ -6,7 +6,6 @@ import HeaderView from "../components/header/headerView.vue";
 import SubHeaderView from "../components/header/subHeaderView.vue";
 import RecursiveNode from "../components/RecursiveNode.vue";
 import ViewDialog from "../components/dialog/viewDialog.vue";
-import draggable from "vuedraggable";
 
 const userStore = useUserStore();
 const authStore = useAuthStore();
@@ -98,7 +97,7 @@ const usersWithoutLeader = computed(() => {
     <SubHeaderView style="position: absolute; top: 0; left: 0; z-index: 1" />
     <v-row>
       <v-col>
-        <v-card class="styled-scrollbar" style="overflow-y: auto; max-height: 80vh">
+        <v-card>
           <div class="tree-container">
             <h1 style="text-align: center">แผนผังองค์กร</h1>
             <v-card-title>

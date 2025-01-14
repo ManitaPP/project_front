@@ -107,10 +107,7 @@ const editUser = async () => {
     <SubHeaderView style="position: absolute; top: 0; left: 0; z-index: 1" />
     <v-row>
       <v-col>
-        <v-card
-          class="glass-card styled-scrollbar"
-          style="overflow-y: auto; max-height: 80vh"
-        >
+        <v-card class="glass-card">
           <v-card-title style="text-align: center">ข้อมูลผู้ใช้</v-card-title>
           <v-card-text>
             <v-row>

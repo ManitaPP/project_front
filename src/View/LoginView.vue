@@ -38,7 +38,7 @@ const clearData = () => {
 
 <template>
   <v-container class="login-page" align="center" justify="center">
-    <v-card style="height: auto; width: 40vw; margin-top: 20px" class="glass-card">
+    <v-card class="glass-card">
       <v-row>
         <v-col col="auto">
           <v-img

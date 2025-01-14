@@ -13,7 +13,7 @@ const selectedDepartment = ref("ไม่เลือกแผนก");
 const selectedPosition = ref("ไม่เลือกตำแหน่ง");
 const search = ref("");
 const currentPage = ref(1);
-const itemsPerPage = 5;
+const itemsPerPage = 10;
 
 const departmentOptions = computed(() => {
   const uniqueDepartments = new Set(
@@ -145,10 +145,7 @@ const reUser = (id: number) => {
     <SubHeaderView style="position: absolute; top: 0; left: 0; z-index: 1" />
     <v-row>
       <v-col col="12">
-        <v-card
-          class="glass-card styled-scrollbar"
-          style="overflow-y: auto; max-height: 80vh"
-        >
+        <v-card class="glass-card">
           <v-card-title style="text-align: center"
             >ข้อมูลผู้ใช้ทั้งหมด
             <v-icon style="margin-left: 1%; margin-bottom: 1%">mdi-account-group</v-icon>

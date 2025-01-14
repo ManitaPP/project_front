@@ -19,15 +19,7 @@ const themeIcon = computed(() =>
     <!-- <template v-slot:prepend> </template> -->
     <!-- <v-img src="/public//application.png" style="height: 70%" class="align-left"></v-img> -->
     <v-app-bar-title style="font-weight: bold">CDG </v-app-bar-title>
-    <v-switch
-      style="margin-right: 3%; margin-top: 1px"
-      @click="toggleTheme"
-      class="d-flex align-center"
-    >
-      <template #prepend>
-        <v-icon>{{ themeIcon }}</v-icon>
-      </template>
-    </v-switch>
+    <v-icon style="margin-right: 20px" @click="toggleTheme">{{ themeIcon }}</v-icon>
   </v-app-bar>
 </template>
 

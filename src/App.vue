@@ -3,7 +3,6 @@ import { useRoute } from "vue-router";
 
 const route = useRoute();
 let isLoginPage = route.path === "/login";
-console.log(isLoginPage);
 </script>
 
 <template>

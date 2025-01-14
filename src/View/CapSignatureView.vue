@@ -84,10 +84,7 @@ const performOCR = () => {
   <HeaderView />
   <v-container align="center" justify="center">
     <SubHeaderView style="position: absolute; top: 0; left: 0; z-index: 1" />
-    <v-card
-      class="styled-scrollbar"
-      style="overflow-y: auto; max-height: 80vh; position: relative"
-    >
+    <v-card>
       <v-card-title>อัปโหลดรูปภาพ</v-card-title>
       <v-card-text>
         <v-row>
