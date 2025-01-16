@@ -13,6 +13,7 @@ import CapSignatureView from "../View/CapSignatureView.vue";
 import RequestView from "../View/request/RequestView.vue";
 import GeneralRequestView from "../View/request/GeneralRequestView.vue";
 import HistoryRequestView from "../View/request/HistoryRequestView.vue";
+import RequestManagementView from "../View/request/RequestManagementView.vue";
 
 
 const routes = [
@@ -86,6 +87,11 @@ const routes = [
     path: '/hisRequest',
     name: 'hisRequest',
     component: HistoryRequestView,
+  },
+  {
+    path: '/managementRequest',
+    name: 'managementRequest',
+    component: RequestManagementView,
   },
 ];
 

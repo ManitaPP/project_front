@@ -16,6 +16,10 @@ const goToHisRe = () => {
   router.push("/hisRequest");
 };
 
+const goToReManage = () => {
+  router.push("/managementRequest");
+};
+
 const searchRequest = (name: string) => {
   requestTypeStore.requests = name;
   goToGeneralRe();
@@ -56,10 +60,14 @@ const searchRequest = (name: string) => {
           "
         >
           <v-card-actions v-if="authStore.currentUser?.role !== 'admin'">
-            <v-btn @click="goToHisRe">ดูประวัติการส่งคำร้อง</v-btn>
+            <v-btn @click="goToHisRe" class="hover-zoom" variant="outlined"
+              >ดูประวัติการส่งคำร้อง</v-btn
+            >
           </v-card-actions>
-          <v-card-actions v-if="authStore.currentUser?.role !== 'user'">
-            <v-btn>ดูคำร้องที่ถูกส่งมา</v-btn>
+          <v-card-actions>
+            <v-btn @click="goToReManage" variant="outlined" class="hover-zoom"
+              >ดูคำร้องที่ถูกส่งมา</v-btn
+            >
           </v-card-actions>
         </div>
       </v-card-text>
