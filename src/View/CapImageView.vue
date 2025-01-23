@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 import { onMounted, ref } from "vue";
 import HeaderView from "../components/header/headerView.vue";
-import SubHeaderView from "../components/header/subHeaderView.vue";
 import { useUserStore } from "../stores/user.store";
 import * as faceapi from "face-api.js";
 import Swal from "sweetalert2";
+import cv from "@techstark/opencv-js";
 
 const file = ref<File | null>(null);
 const processedImage = ref<string | null>(null);
@@ -327,9 +327,7 @@ const downloadImage = async () => {
 
 <template>
   <HeaderView />
-  <v-container align="center" justify="center">
-    <SubHeaderView style="position: absolute; top: 0; left: 0; z-index: 1" />
-    <v-card>
+  <v-container align="center" justify="center" >
       <div
         v-if="userStore.loading"
         class="text-center"
@@ -349,6 +347,7 @@ const downloadImage = async () => {
           rounded
           v-model="file"
           accept="image/*"
+          width="50vw"
           @change="processImage"
         ></v-file-input>
         <v-row v-if="file || processedImage1">
@@ -357,7 +356,7 @@ const downloadImage = async () => {
               <h4>ต้นฉบับ:</h4>
               <img
                 :src="originalFile || ''"
-                alt="ต้นฉบับ"
+                alt="ต้นฉบับ"                                                                                                                                                 
                 class="image-preview styled-scrollbar"
               />
             </div>
@@ -376,11 +375,10 @@ const downloadImage = async () => {
             </div>
           </v-col>
         </v-row>
-        <v-card-actions>
+        <v-card-actions v-if="file || processedImage1">
           <v-btn @click="cancel">ยกเลิก</v-btn>
         </v-card-actions>
-      </v-card-text>
-    </v-card>
+      </v-card-text>                                   
   </v-container>
 </template>
 

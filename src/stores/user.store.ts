@@ -11,6 +11,9 @@ export const useUserStore = defineStore("useUserStore", () => {
     const existingThaiIds = ref<string[]>([]);
     const currentUser= ref<User>();
     const showDialog = ref(false);
+    const showDialog2 = ref(false);
+     const showDialog3 = ref(false);
+    const showPositionDialog = ref(false);
     const authStore = useAuthStore();
     const name = ref('');
     const email = ref('');
@@ -175,6 +178,6 @@ export const useUserStore = defineStore("useUserStore", () => {
 
 
       return { getUsers, createUser, deleteUser, updateUser, users, currentUser,showDialog ,name, email, password, thaiId, getUserByRole, thaiIdError,nameError,passwordError,emailError, tel,telError, getUserByLeader,getPositionByLeader, getOneById,updateLeader,
-        getOneByName,existingThaiIds,searchUsers,reUser,getAllUsers,getLeaderByPriority, getUsersLeaderAllNull,userLeaderNull,loading
+        getOneByName,existingThaiIds,searchUsers,reUser,getAllUsers,getLeaderByPriority, getUsersLeaderAllNull,userLeaderNull,loading,showPositionDialog, showDialog2, showDialog3
        };
 })

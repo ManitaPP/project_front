@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { ref, onMounted, nextTick } from "vue";
 import HeaderView from "../components/header/headerView.vue";
-import SubHeaderView from "../components/header/subHeaderView.vue";
 import Tesseract from "tesseract.js";
 
 const file = ref<File | null>(null);
@@ -83,7 +82,6 @@ const performOCR = () => {
 <template>
   <HeaderView />
   <v-container align="center" justify="center">
-    <SubHeaderView style="position: absolute; top: 0; left: 0; z-index: 1" />
     <v-card>
       <v-card-title>อัปโหลดรูปภาพ</v-card-title>
       <v-card-text>

@@ -35,23 +35,26 @@ const departmentLeaders = computed(() => {
   const currentUserPositionId = userStore.currentUser?.positionId;
 
   const filteredUsers = userStore.users.filter((user) => {
-    const isCurrentUsersSubordinate = user.leaderId === currentUserId; // Check if the current user is the leader
+    const isCurrentUsersSubordinate = user.leaderId === currentUserId;
     return (
       user.role === "user" &&
       user.userId !== currentUserId &&
-      user.positionId! < currentUserPositionId! && // Only include users with positionId less than the current user
+      user.positionId! < currentUserPositionId! && 
       user.departmentId === currentUserDepartmentId &&
       user.departmentId != null &&
       !isCurrentUsersSubordinate
     );
   });
 
-  const leader = filteredUsers.map((user) => ({
+  const ceoUsers = userStore.users.filter((user) => user.position?.name === "CEO");
+
+  const leaders = [...filteredUsers, ...ceoUsers].map((user) => ({
     name: user.name,
     id: user.userId,
+    position: user.position, 
   }));
 
-  return leader.map((leader) => leader.name);
+  return leaders.map((leader) => leader.name);
 });
 
 const cancel = async () => {

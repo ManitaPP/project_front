@@ -11,10 +11,12 @@
   "dependencies": {
     "@mdi/font": "^7.4.47",
     "@primevue/themes": "^4.2.2",
+    "@techstark/opencv-js": "^4.10.0-release.1",
     "@tensorflow-models/coco-ssd": "^2.2.3",
     "@tensorflow/tfjs": "^4.22.0",
     "axios": "^1.7.7",
     "face-api.js": "^0.22.2",
+    "opencv.js": "^1.2.1",
     "orgchart": "^4.0.1",
     "pinia": "^2.2.6",
     "primeicons": "^7.0.0",

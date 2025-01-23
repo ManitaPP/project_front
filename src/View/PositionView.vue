@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import Swal from "sweetalert2";
 import HeaderView from "../components/header/headerView.vue";
-import SubHeaderView from "../components/header/subHeaderView.vue";
 import { useDepartmentStore } from "../stores/department.store";
 import { usePositionStore } from "../stores/position.store";
 import router from "../router";
@@ -67,16 +66,9 @@ const showDepartment = () => {
   if (showD.value) showP.value = false;
 };
 </script>
-<template>
+<!-- <template>
   <HeaderView />
   <v-container>
-    <SubHeaderView style="position: absolute; top: 0; left: 0; z-index: 1" />
-    <v-card
-      align="center"
-      justify="center"
-      class="glass-card styled-scrollbar"
-      style="overflow-y: auto; max-height: 80vh"
-    >
       <v-row>
         <v-col>
           <v-card-title>เพิ่มตำแหน่ง</v-card-title>
@@ -162,7 +154,7 @@ const showDepartment = () => {
       </v-card-text>
       <v-row>
         <v-col>
-          <v-card-actions>
+          <v-card-actions >
             <v-btn variant="flat" size="large" rounded color="error" @click="clear()"
               >กลับ</v-btn
             >
@@ -178,8 +170,7 @@ const showDepartment = () => {
           </v-card-actions>
         </v-col>
       </v-row>
-    </v-card>
   </v-container>
-</template>
+</template> -->
 
 <style scoped></style>

@@ -3,7 +3,6 @@ import { ref, onMounted, watch, provide, computed } from "vue";
 import { useUserStore } from "../stores/user.store";
 import { useAuthStore } from "../stores/auth.store";
 import HeaderView from "../components/header/headerView.vue";
-import SubHeaderView from "../components/header/subHeaderView.vue";
 import RecursiveNode from "../components/RecursiveNode.vue";
 import ViewDialog from "../components/dialog/viewDialog.vue";
 
@@ -78,6 +77,7 @@ onMounted(async () => {
   }
   if (authStore.currentUser?.role === "admin") {
     await userStore.getLeaderByPriority(1);
+    console.log("userStore.users", userStore.users);
     data.value.children = userStore.users.map((user) => constructNode(user));
   }
   await userStore.getUsersLeaderAllNull();
@@ -94,12 +94,11 @@ const usersWithoutLeader = computed(() => {
 <template>
   <HeaderView />
   <v-container>
-    <SubHeaderView style="position: absolute; top: 0; left: 0; z-index: 1" />
     <v-row>
       <v-col>
-        <v-card>
+        <!-- <v-card> -->
           <div class="tree-container">
-            <h1 style="text-align: center">แผนผังองค์กร</h1>
+            <v-card-title style="text-align: center;">แผนผังองค์กร</v-card-title>
             <v-card-title>
               <v-card v-if="authStore.currentUser?.role === 'admin'">
                 <v-card-title class="d-flex justify-space-between align-center">
@@ -195,7 +194,7 @@ const usersWithoutLeader = computed(() => {
           <v-dialog v-model="userStore.showDialog" max-width="600px">
             <ViewDialog :node="selectedNode" />
           </v-dialog>
-        </v-card>
+        <!-- </v-card> -->
       </v-col>
     </v-row>
   </v-container>

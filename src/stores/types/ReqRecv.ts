@@ -3,7 +3,7 @@ import { Request } from "./Request";
 
 export interface ReqRecv {
     id?: number;
-    status: 'รอดำเนินการ'| 'กำลังดำเนินการ' |'ขอข้อมูลเพิ่มเติม' |'อนุมัติ' |'ไม่อนุมัติ' ;
+    status: 'รอดำเนินการ'| 'กำลังดำเนินการ' | 'กำลังตรวจสอบเพิ่มเติม' |'ขอข้อมูลเพิ่มเติม' |'อนุมัติ' |'ไม่อนุมัติ' ;
     sentAt: Date;
     respondedAt?: Date;
     userId?: number;

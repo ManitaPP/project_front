@@ -149,10 +149,10 @@ const saveUser = () => {
 };
 </script>
 <template>
-  <v-container fill-height class="register-page">
+  <v-container fluid class="register-page"  style="height: 100vh;background-color: #23486A;">
     <v-row>
       <v-col cols="12" sm="8" md="6">
-        <v-card style="text-align: center" class="glass-card">
+        <v-card style="text-align: center;border-radius: 16px;">
           <v-card-title align="center">
             <v-img src="/public/sign-in.png" height="100" width="100" contain></v-img
           ></v-card-title>

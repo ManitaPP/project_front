@@ -1,15 +1,35 @@
 <script lang="ts" setup>
 import router from "../../router";
 import HeaderView from "../../components/header/headerView.vue";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useReqRecvStore } from "../../stores/reqRecv.store";
 import { useAuthStore } from "../../stores/auth.store";
 import EditRequestDialog from "../../components/dialog/editRequestDialog.vue";
 import Swal from "sweetalert2";
 import { ReqRecv } from "../../stores/types/ReqRecv";
+import { useUserStore } from "../../stores/user.store";
 
 const reqRecvStore = useReqRecvStore();
 const authStore = useAuthStore();
+const userStore = useUserStore();
+
+const positionOptions = computed(() => {
+  const uniquePositions = new Set(
+    userStore.users
+      .map((user) => user.position?.name)
+      .filter((position) => position !== undefined && position !== null)
+  );
+  return [...Array.from(uniquePositions)];
+});
+
+const departmentOptions = computed(() => {
+  const uniqueDepartments = new Set(
+    userStore.users
+      .map((user) => user.department?.name)
+      .filter((department) => department !== undefined && department !== null)
+  );
+  return [...Array.from(uniqueDepartments)];
+});
 
 const goToRequest = () => {
   router.push("/request");
@@ -36,13 +56,14 @@ function formatDate(dateString: string): string {
 }
 
 onMounted(async () => {
+  await userStore.getAllUsers();
   await reqRecvStore.getReceiverByUser(authStore.currentUser?.userId!);
 });
 
 const Approve = async (id: number) => {
   Swal.fire({
     title: "ต้องการอนุมัติคำร้องนี้หรือไม่?",
-    icon: "question",
+    icon: "warning",
     showCancelButton: true,
     confirmButtonColor: "#3085d6",
     cancelButtonColor: "#d33",
@@ -69,7 +90,7 @@ const Approve = async (id: number) => {
 const NotApproved = async (id: number) => {
   Swal.fire({
     title: "ต้องการไม่อนุมัติคำร้องนี้หรือไม่?",
-    icon: "question",
+    icon: "warning",
     showCancelButton: true,
     confirmButtonColor: "#3085d6",
     cancelButtonColor: "#d33",
@@ -91,7 +112,115 @@ const NotApproved = async (id: number) => {
   });
 };
 
-const SumRequest = async () => {};
+const SumRequest = async (req: ReqRecv) => {
+  const { value: formValues } = await Swal.fire({
+    title: "เลือกข้อมูลสำหรับยื่นคำร้องต่อ",
+    html: `
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 15px; width: 100%;">
+        <div style="width: 100%; text-align: center;">
+          <label for="department-select" style="font-weight: bold; margin-bottom: 5px;">แผนก:</label>
+          <select id="department-select" class="swal2-input" style="width: 250px; text-align: center;">
+            <option value="">เลือกแผนก</option>
+            ${departmentOptions.value
+              .map((department) => `<option value="${department}">${department}</option>`)
+              .join("")}
+          </select>
+        </div>
+        <div style="width: 100%; text-align: center;">
+          <label for="position-select" style="font-weight: bold; margin-bottom: 5px;">ตำแหน่ง:</label>
+          <select id="position-select" class="swal2-input" style="width: 250px; text-align: center;">
+            <option value="">เลือกตำแหน่ง</option>
+            ${positionOptions.value
+              .map((position) => `<option value="${position}">${position}</option>`)
+              .join("")}
+          </select>
+        </div>
+        <div style="width: 100%; text-align: center;">
+          <label for="user-select" style="font-weight: bold; margin-bottom: 5px;">ชื่อผู้ใช้:</label>
+          <select id="user-select" class="swal2-input" style="width: 250px; text-align: center;">
+            <!-- User options will be dynamically updated -->
+          </select>
+        </div>
+      </div>
+    `,
+    didOpen: () => {
+      const departmentSelect = document.getElementById("department-select") as HTMLSelectElement;
+      const positionSelect = document.getElementById("position-select") as HTMLSelectElement;
+      const userSelect = document.getElementById("user-select") as HTMLSelectElement;
+
+      const updateUserOptions = () => {
+        const selectedDepartment = departmentSelect.value;
+        const selectedPosition = positionSelect.value;
+
+        const filteredUsers = userStore.users.filter((user) => {
+          return (
+            user.userId !== authStore.currentUser?.userId && // Exclude the current user
+            (!selectedDepartment || user.department?.name === selectedDepartment) &&
+            (!selectedPosition || user.position?.name === selectedPosition)
+          );
+        });
+
+        userSelect.innerHTML = "";
+        filteredUsers.forEach((user) => {
+          const option = document.createElement("option");
+          option.value = user.userId ? user.userId.toString() : "";
+          option.textContent = user.name;
+          userSelect.appendChild(option);
+        });
+      };
+
+      departmentSelect.addEventListener("change", updateUserOptions);
+      positionSelect.addEventListener("change", updateUserOptions);
+      updateUserOptions();
+    },
+    focusConfirm: false,
+    showCancelButton: true,
+    confirmButtonText: "ยืนยัน",
+    preConfirm: () => {
+      const department = (
+        document.getElementById("department-select") as HTMLSelectElement
+      ).value;
+      const position = (
+        document.getElementById("position-select") as HTMLSelectElement
+      ).value;
+      const user = (
+        document.getElementById("user-select") as HTMLSelectElement
+      ).value;
+
+      if (!user) {
+        Swal.showValidationMessage("กรุณาเลือกผู้ใช้");
+        return null;
+      }
+
+      return { department, position, user: parseInt(user) };
+    },
+  });
+
+  if (formValues) {
+    try {
+      const newReqRecv: ReqRecv = {
+        status: 'กำลังตรวจสอบเพิ่มเติม',
+        sentAt: req.sentAt,
+        userId: formValues.user,
+        requestId: req.requestId,
+      };
+      await reqRecvStore.createReqRecv(newReqRecv);
+
+      Swal.fire({
+        title: "ส่งคำร้องสำเร็จ!",
+        icon: "success",
+      });
+    } catch (error) {
+      Swal.fire({
+        title: "เกิดข้อผิดพลาด",
+        text: "ไม่สามารถส่งคำร้องได้ กรุณาลองใหม่",
+        icon: "error",
+      });
+      console.error("Error creating ReqRecv:", error);
+    }
+  }
+};
+
 </script>
 
 <template>
@@ -153,7 +282,7 @@ const SumRequest = async () => {};
               class="hover-zoom"
               variant="tonal"
               color="primary"
-              @click.stop="SumRequest()"
+              @click.stop="SumRequest(item)"
               >ส่งคำร้อง</v-btn
             >
           </div>

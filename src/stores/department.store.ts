@@ -8,6 +8,7 @@ export const useDepartmentStore = defineStore("useDepartmentStore", () => {
     const currentDepartment = ref<Department>();
     const nameDepartment = ref('');
     const description = ref('');
+    const nameDepartError = ref('');
 
     const getDepartments = async () => {
         try {
@@ -27,5 +28,5 @@ export const useDepartmentStore = defineStore("useDepartmentStore", () => {
                 console.error("Failed to fetch departments:", e);
          }
     }
-      return { getDepartments, createDepartment, departments, description ,currentDepartment, nameDepartment };
+      return { getDepartments, createDepartment, departments, description ,currentDepartment, nameDepartment ,nameDepartError};
 })

@@ -1,19 +1,19 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
 import HeaderView from "../components/header/headerView.vue";
-import SubHeaderView from "../components/header/subHeaderView.vue";
 import { useUserStore } from "../stores/user.store";
 import Swal from "sweetalert2";
 import UserEditDialog from "../components/dialog/userEditDialog.vue";
 import { User } from "../stores/types/user";
 import router from "../router";
+import SelectDialog from "../components/dialog/selectDialog.vue";
 const userStore = useUserStore();
 const selectedRole = ref("user");
 const selectedDepartment = ref("ไม่เลือกแผนก");
 const selectedPosition = ref("ไม่เลือกตำแหน่ง");
 const search = ref("");
 const currentPage = ref(1);
-const itemsPerPage = 10;
+const itemsPerPage = 20;
 
 const departmentOptions = computed(() => {
   const uniqueDepartments = new Set(
@@ -91,10 +91,6 @@ const editUser = (user: User) => {
   userStore.showDialog = true;
 };
 
-const goToPositionView = () => {
-  router.push("/position");
-};
-
 const deleteUser = async (idUser: number) => {
   Swal.fire({
     title: "ต้องการที่จะลบข้อมูลหรือไม่?",
@@ -142,10 +138,8 @@ const reUser = (id: number) => {
 <template>
   <HeaderView />
   <v-container>
-    <SubHeaderView style="position: absolute; top: 0; left: 0; z-index: 1" />
     <v-row>
       <v-col col="12">
-        <v-card class="glass-card">
           <v-card-title style="text-align: center"
             >ข้อมูลผู้ใช้ทั้งหมด
             <v-icon style="margin-left: 1%; margin-bottom: 1%">mdi-account-group</v-icon>
@@ -195,7 +189,7 @@ const reUser = (id: number) => {
               <v-col class="text-right">
                 <v-btn
                   color="#D0E8C5"
-                  @click="goToPositionView()"
+                  @click="userStore.showPositionDialog = true"
                   prepend-icon="mdi-briefcase"
                   class="mt-0"
                   rounded
@@ -208,7 +202,7 @@ const reUser = (id: number) => {
           <v-card-text>
             <v-table style="width: 100%" class="styled-table">
               <thead>
-                <tr style="background-color: #6a669d">
+                <tr style="background-color: #23486A;color: aliceblue;">
                   <th style="text-align: center" v-if="selectedRole === 'user'">แผนก</th>
                   <th style="text-align: center" v-if="selectedRole === 'user'">
                     ตำแหน่ง
@@ -315,12 +309,14 @@ const reUser = (id: number) => {
               class="mt-4"
             ></v-pagination>
           </v-card-text>
-        </v-card>
+          <v-dialog v-model="userStore.showPositionDialog">
+            <SelectDialog/>
+          </v-dialog>
       </v-col>
     </v-row>
   </v-container>
 </template>
-<style scoped>
+<style scoped>      
 .hover-class:hover {
   background-color: #b3c8cf;
   cursor: pointer;

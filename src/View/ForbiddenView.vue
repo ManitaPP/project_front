@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import HeaderView from "../components/header/headerView.vue";
-import SubHeaderView from "../components/header/subHeaderView.vue";
 import router from "../router";
 import { useAuthStore } from "../stores/auth.store";
 
@@ -16,7 +15,6 @@ const goToMainPage = () => {
 <template>
   <HeaderView />
   <v-container>
-    <SubHeaderView style="position: absolute; top: 0; left: 0; z-index: 1" />
     <v-row style="margin-top: 10%">
       <v-col cols="12" class="text-center">
         <v-img src="/public/restriction.png" :width="200" class="mx-auto"></v-img>

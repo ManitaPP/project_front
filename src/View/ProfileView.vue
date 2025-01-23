@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, watch } from "vue";
 import HeaderView from "../components/header/headerView.vue";
-import SubHeaderView from "../components/header/subHeaderView.vue";
 import { useAuthStore } from "../stores/auth.store";
 import { useUserStore } from "../stores/user.store";
 import Swal from "sweetalert2";
@@ -104,82 +103,36 @@ const editUser = async () => {
 <template>
   <HeaderView />
   <v-container>
-    <SubHeaderView style="position: absolute; top: 0; left: 0; z-index: 1" />
-    <v-row>
-      <v-col>
-        <v-card class="glass-card">
-          <v-card-title style="text-align: center">ข้อมูลผู้ใช้</v-card-title>
-          <v-card-text>
-            <v-row>
-              <v-col col="6" align="center">
-                <v-img src="/public/profile.png" width="300" height="300"></v-img>
-              </v-col>
-              <v-col col="6">
-                <v-row justify="center">
-                  <v-col
-                    ><v-text-field
-                      label="รหัสบัตรประชาชน"
-                      variant="solo"
-                      rounded
-                      disabled
-                      prepend-icon="mdi-card-account-details"
-                      :error-messages="userStore.thaiIdError"
-                      v-model="userStore.currentUser!.thaiId"
-                    ></v-text-field
-                  ></v-col>
-                </v-row>
-                <v-row justify="center">
-                  <v-col
-                    ><v-text-field
-                      label="ชื่อ-นามสกุล"
-                      variant="solo"
-                      rounded
-                      prepend-icon="mdi-account-circle"
-                      :error-messages="userStore.nameError"
-                      v-model="userStore.currentUser!.name"
-                    ></v-text-field
-                  ></v-col>
-                </v-row>
-                <v-row justify="center">
-                  <v-col
-                    ><v-text-field
-                      label="เบอร์โรศัพท์"
-                      variant="solo"
-                      rounded
-                      prepend-icon="mdi-phone"
-                      :error-messages="userStore.telError"
-                      v-model="userStore.currentUser!.tel"
-                    ></v-text-field
-                  ></v-col>
-                </v-row>
-                <v-row justify="center">
-                  <v-col
-                    ><v-text-field
-                      label="อีเมล"
-                      variant="solo"
-                      rounded
-                      prepend-icon="mdi-email"
-                      :error-messages="userStore.emailError"
-                      v-model="userStore.currentUser!.email"
-                    ></v-text-field
-                  ></v-col>
-                </v-row>
-              </v-col>
-            </v-row>
-            <v-card-actions style="justify-content: center">
-              <v-btn
-                variant="flat"
-                size="large"
-                rounded
-                color="primary"
-                @click="editUser()"
-                >บันทึกข้อมูล</v-btn
-              >
-            </v-card-actions>
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
+    <v-card-title style="text-align: center">ข้อมูลผู้ใช้</v-card-title>
+    <v-card-text>
+      <v-row>
+        <v-col align="center" justify="center">
+          <v-img src="/public/profile.png" width="200" height="200"></v-img>
+        </v-col>
+      </v-row>
+      <v-row justify="center">
+        <v-col cols="6"><v-text-field label="รหัสบัตรประชาชน" variant="solo" rounded disabled
+            prepend-icon="mdi-card-account-details" :error-messages="userStore.thaiIdError"
+            v-model="userStore.currentUser!.thaiId"></v-text-field></v-col>
+        <v-col cols="6"><v-text-field label="ชื่อ-นามสกุล" variant="solo" rounded prepend-icon="mdi-account-circle"
+            :error-messages="userStore.nameError" v-model="userStore.currentUser!.name"></v-text-field></v-col>
+      </v-row>
+      <v-row v-if="userStore.currentUser?.role !== 'admin'">
+        <v-col cols="6"><v-text-field label="แผนก" variant="solo" disabled rounded prepend-icon="mdi-account-group"
+         v-model="userStore.currentUser!.department!.name"></v-text-field></v-col>
+      <v-col cols="6"><v-text-field label="ตำแหน่ง" variant="solo" disabled rounded prepend-icon="mdi-briefcase"
+        v-model="userStore.currentUser!.position!.name"></v-text-field></v-col>
+      </v-row>
+      <v-row justify="center">
+        <v-col cols="6"><v-text-field label="เบอร์โรศัพท์" variant="solo" rounded prepend-icon="mdi-phone"
+            :error-messages="userStore.telError" v-model="userStore.currentUser!.tel"></v-text-field></v-col>
+        <v-col cols="6"><v-text-field label="อีเมล" variant="solo" rounded prepend-icon="mdi-email"
+            :error-messages="userStore.emailError" v-model="userStore.currentUser!.email"></v-text-field></v-col>
+      </v-row>
+      <v-card-actions style="justify-content: center">
+        <v-btn variant="flat" size="large" rounded color="primary" @click="editUser()">บันทึกข้อมูล</v-btn>
+      </v-card-actions>
+    </v-card-text>
   </v-container>
 </template>
 <style scoped></style>
